@@ -5,6 +5,7 @@ tmp/
 logs/
 log/
 results/
+demo/assets/crane_360/
 
 *.seed
 *.log
