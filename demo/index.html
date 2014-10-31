@@ -5,31 +5,61 @@
     <link rel="stylesheet" href="./assets/normalize.css" />
     <link rel="stylesheet" href="./assets/main.css" />
     <style>
-      /* begin demo embedded styles */
+      body {
+        margin: 0;
+        padding: 0;
+        outline: 0;
+        position: relative;
 
-      /* end demo embedded styles */
+        text-align: center;
+      }
+
+      .threesixty {
+        margin: 0px auto;
+      }
     </style>
   </head>
   <body>
-    <h1>threesixty demo</h1>
-
-    <!-- begin demo markup -->
-
-    <!-- end demo markup -->
-
-    <p>See the <a href="http://wautersj.github.io/threesixty">project homepage</a>.
-    <p>Check out the <a href="https://github.com/wautersj/threesixty">project repo</a>.
-    <p>Copyright 2014 Joeri Wauters</p>
+    <h1>Threesixty demo</h1>
+    <p>Copyright 2014 Digiti</p>
 
     <script src="./../dist/threesixty.js"></script>
+    <script src="./../bower_components/jquery/dist/jquery.js"></script>
 
     <script>
-      /* begin demo script */
 
-      var n = threesixty();
-      console.log(n);
+      var sourceFiles = [];
+      for (var i = 0; i < 300; i++) {
+        var id = i;
+        if(String(id).length<4){
+          var diff = 4 - String(id).length;
 
-      /* end demo script */
+          for (var d = diff - 1; d >= 0; d--) {
+            id = '0' + id;
+          };
+        }
+
+        var file = "assets/kraan_min_640/kraan_" + id + " copy.jpg";
+        sourceFiles.push(file);
+      };
+
+      var vm = new Threesixty({
+        width: 640,
+        height: 480
+      });
+
+      vm.load({
+        rows: 10,
+        startRow: 4,
+        startOnStatus: 1,
+        normal: {
+          sources: sourceFiles,
+          width: 640,
+          height: 480
+        }
+      });
+
+      //vm.loadRow({row:7, render:true});
     </script>
   </body>
 </html>

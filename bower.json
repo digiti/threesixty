@@ -8,5 +8,8 @@
     "bower_components",
     "test"
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "jquery": "~2.1.1"
+  }
 }
