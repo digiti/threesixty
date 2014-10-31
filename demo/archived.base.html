@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>threesixty demo</title>
+    <link rel="stylesheet" href="./assets/normalize.css" />
+    <link rel="stylesheet" href="./assets/main.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        outline: 0;
+        position: relative;
+
+        text-align: center;
+      }
+
+      .threesixty {
+        margin: 0px auto;
+      }
+
+      #testImages,
+      #testCanvas {
+        margin: 0px auto;
+        width: 640px;
+        height: 480px;
+
+        margin-bottom: 100px;
+      }
+
+      #testCanvas {
+        background: black;
+      }
+
+      #testImages{
+        background: red;
+        position: relative;
+        overflow: hidden;
+        display: none;
+      }
+
+      #testImages img {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Threesixty demo</h1>
+    <p>Copyright 2014 Digiti</p>
+    <a href="#" id="startLoad">Start Load</a>
+    <br/><br/><br/>
+
+    <canvas id="testCanvas" width="1280" height="960" class="unscrollable"></canvas>
+
+    <div id="testImages"></div>
+
+    <script src="./../dist/threesixty.js"></script>
+    <script src="./../bower_components/jquery/dist/jquery.js"></script>
+
+    <script>
+      $('#startLoad').on('click',function(event) {
+        event.preventDefault();
+
+        $(this).remove();
+      });
+
+      var prefix = 'bad_';
+      var filetype = '.jpg';
+      var folder = 'assets/bad_360_voorbeeld/';
+      var howMany = 300;
+
+      var canvas      = document.getElementById("testCanvas");
+      var ctx         = canvas.getContext("2d");
+
+      var images = [];
+      for (var i = 0 ; i < howMany ; i++) {
+        var id = i;
+        if(String(id).length<4){
+          var diff = 4 - String(id).length;
+
+          for (var d = diff - 1; d >= 0; d--) {
+            id = '0' + id;
+          };
+        }
+
+        var file = prefix + id + filetype;
+        images.push(file);
+      };
+
+      // window or document
+      window.addEventListener("touchmove", function(event) {
+        if (event.target.classList.contains('unscrollable')) {
+          // no more scrolling
+          event.preventDefault();
+        }
+      }, false);
+
+      // No special listeners needed on .scrollable elements
+
+    </script>
+  </body>
+</html>

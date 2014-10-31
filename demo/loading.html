@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>threesixty demo</title>
+    <link rel="stylesheet" href="./assets/normalize.css" />
+    <link rel="stylesheet" href="./assets/main.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        outline: 0;
+        position: relative;
+
+        text-align: center;
+      }
+
+      .threesixty {
+        margin: 0px auto;
+      }
+
+      #testImages,
+      #testCanvas {
+        margin: 0px auto;
+        width: 1280px;
+        height: 960px;
+
+        margin-bottom: 100px;
+      }
+
+      #testCanvas {
+        background: black;
+      }
+
+      #testImages{
+        background: red;
+        position: relative;
+        overflow: hidden;
+        display: none;
+      }
+
+      #testImages img {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Threesixty demo</h1>
+    <p>Copyright 2014 Digiti</p>
+    <a href="#" id="startLoad">Start Load</a>
+    <br/><br/><br/>
+
+    <canvas id="testCanvas" width="1280" height="960" class="unscrollable"></canvas>
+
+    <div id="testImages"></div>
+
+    <script src="./../dist/threesixty.js"></script>
+    <script src="./../bower_components/jquery/dist/jquery.js"></script>
+
+    <script>
+      $('#startLoad').on('click',function(event) {
+        event.preventDefault();
+
+        $(this).remove();
+      });
+
+      var prefix = 'out';
+      var filetype = '.jpg';
+      var folder = 'assets/sprites/';
+      var rows = 10;
+
+      var canvas      = document.getElementById("testCanvas");
+      var ctx         = canvas.getContext("2d");
+
+      var sprites = [];
+
+      fixScrolling();
+      seedImages();
+
+      function fixScrolling() {
+        // window or document
+        window.addEventListener("touchmove", function(event) {
+          if (event.target.classList.contains('unscrollable')) {
+            // no more scrolling
+            event.preventDefault();
+          }
+        }, false);
+
+        // No special listeners needed on .scrollable elements
+      }
+
+      function seedImages() {
+        for (var i = 0 ; i < rows ; i++) {
+          var file = folder + prefix + i + filetype;
+          sprites.push(file);
+        };
+      }
+    </script>
+  </body>
+</html>

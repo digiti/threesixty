@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>threesixty demo</title>
+    <link rel="stylesheet" href="./assets/normalize.css" />
+    <link rel="stylesheet" href="./assets/main.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        outline: 0;
+        position: relative;
+
+        text-align: center;
+      }
+
+      .threesixty {
+        margin: 0px auto;
+      }
+
+      #testImages,
+      #testCanvas {
+        margin: 0px auto;
+        width: 640px;
+        height: 480px;
+
+        margin-bottom: 100px;
+      }
+
+      #testCanvas {
+        background: black;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Threesixty demo</h1>
+    <p>Copyright 2014 Digiti</p>
+    <div id="touchFeedback">Ready</div>
+    <br/><br/><br/>
+
+    <canvas id="testCanvas" width="1280" height="960" class="unscrollable"></canvas>
+
+    <!-- <script src="./../dist/threesixty.js"></script> -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <script>
+      $('#startLoad').on('click',function(event) {
+        event.preventDefault();
+        playLoadFrames();
+        $(this).remove();
+      });
+
+
+      var canvas      = document.getElementById("testCanvas");
+      var ctx         = canvas.getContext("2d");
+
+      var currentLoaded = 0;
+      var currentFrame = 0;
+
+      var sources = [];
+      var frames = [];
+
+
+      for (var i = 0; i < 300; i++) {
+        var id = i;
+        if(String(id).length<4){
+          var diff = 4 - String(id).length;
+
+          for (var d = diff - 1; d >= 0; d--) {
+            id = '0' + id;
+          };
+        }
+
+        var file = "kraan_" + id + " copy.jpg";
+        sources.push(file);
+      };
+
+      var playFrom = 0;
+      var playTo = 299;
+
+      var playFrame;
+      var loadFrame = 0;
+
+
+      preloadFrames();
+      //findFrame(playFrom);
+
+      function preloadFrames() {
+        var img = document.createElement("img");
+        img.onload = function() {
+            frames.push(this);
+            loadFrame++;
+
+            if(loadFrame > playTo) {
+                // all images preloaded
+                loadFrame = undefined;
+
+                $('#touchFeedback').html('Preload Complete!');
+
+                /*
+                findFrame();
+                enable_dragging();
+                */
+
+                //autoAnimate();
+            }
+            else {
+
+              $('#touchFeedback').html((loadFrame+1) + ' / ' + (playTo+1));
+
+
+              preloadFrames();
+
+              if(loadFrame==150){
+                findFrame(75);
+                enable_dragging();
+              }
+            }
+        }
+
+        var file = sources[loadFrame];
+        img.src = 'assets/kraan_min_640/' + file; // Set source path.
+      }
+
+      function findFrame(frame) {
+        if(!frame || frame!==playFrame){
+
+          frame = frame ? frame : Math.floor(playTo/2);
+
+          var img = frames[frame];
+
+          window.requestAnimationFrame(function(){
+            ctx.clearRect( 0, 0, canvas.width, canvas.height );
+            ctx.drawImage(img, 0, 0, 640, 480, 0, 0, canvas.width, canvas.height);
+
+            playFrame = frame;
+          });
+        }
+      }
+
+
+      var animator;
+      var animator_frame = 0;
+      function autoAnimate() {
+        animator = setInterval(function(){
+          findFrame(animator_frame);
+
+          if(animator_frame<playTo){
+            animator_frame ++;
+          } else {
+            animator_frame = 0;
+          }
+        }, 1000/30);
+      }
+
+      /* ------------------ */
+
+      // window or document
+      window.addEventListener("touchmove", function(event) {
+        if (event.target.classList.contains('unscrollable')) {
+          // no more scrolling
+          event.preventDefault();
+        }
+      }, false);
+
+      // No special listeners needed on .scrollable elements
+
+
+      /* ------------------- */
+
+
+      var IS_MOVING = false;
+      var DOWN_POS;
+      var START_FRAME;
+
+      function enable_dragging() {
+        $('.unscrollable').mousedown(function(e) {
+          down({
+            x: e.pageX,
+            y: e.pageY
+          });
+        });
+        $(window).mousemove(function(e) {
+          if(IS_MOVING==true){
+            move({
+              x: e.pageX,
+              y: e.pageY
+            });
+          }
+        });
+
+        $(window).mouseup(function() { up(); });
+
+        // Setup touch event handlers.
+        $('.unscrollable').bind('touchstart', function(e) {
+          e.preventDefault();
+          down({
+            x: e.originalEvent.touches[0].pageX,
+            y: e.originalEvent.touches[0].pageY
+          });
+        });
+        $('.unscrollable').bind('touchmove', function(e) {
+          e.preventDefault();
+          move({
+            x: e.originalEvent.touches[0].pageX,
+            y: e.originalEvent.touches[0].pageY
+          });
+        });
+        $(window).bind('touchend', function(e) {
+          e.preventDefault();
+          up(e);
+        });
+      }
+
+      function down(param) {
+        $('#touchFeedback').html('down');
+        DOWN_POS = param;
+        START_FRAME = playFrame;
+        IS_MOVING = true;
+      }
+
+      function move(param) {
+        var difference = Math.round((param.x - DOWN_POS.x)/20);
+        var newFame = START_FRAME + difference;
+
+
+
+        findFrame(newFame);
+
+        $('#touchFeedback').html('diff: ' + difference);
+      }
+
+      function up(param) {
+        $('#touchFeedback').html('Cur Frame: ' + playFrame);
+        IS_MOVING = false;
+      }
+    </script>
+  </body>
+</html>

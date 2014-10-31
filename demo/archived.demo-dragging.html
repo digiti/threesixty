@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>threesixty demo</title>
+    <link rel="stylesheet" href="./assets/normalize.css" />
+    <link rel="stylesheet" href="./assets/main.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        outline: 0;
+        position: relative;
+
+        text-align: center;
+      }
+
+      .threesixty {
+        margin: 0px auto;
+      }
+
+      #testImages,
+      #testCanvas {
+        margin: 0px auto;
+        width: 640px;
+        height: 480px;
+
+        margin-bottom: 100px;
+      }
+
+      #testCanvas {
+        background: black;
+      }
+
+      #testImages{
+        background: red;
+        position: relative;
+        overflow: hidden;
+        display: none;
+      }
+
+      #testImages img {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Threesixty demo</h1>
+    <p>Copyright 2014 Digiti</p>
+    <a href="#" id="startLoad">Start Load</a><br/><br/>
+    <div id="touchFeedback">Ready</div>
+    <br/><br/><br/>
+
+    <canvas id="testCanvas" width="1280" height="960" class="unscrollable"></canvas>
+
+    <div id="testImages"></div>
+
+    <script src="./../dist/threesixty.js"></script>
+    <script src="./../bower_components/jquery/dist/jquery.js"></script>
+
+    <script>
+      $('#startLoad').on('click',function(event) {
+        event.preventDefault();
+        playLoadFrames();
+        $(this).remove();
+      });
+
+
+      var canvas      = document.getElementById("testCanvas");
+      var ctx         = canvas.getContext("2d");
+
+      var currentLoaded = 0;
+      var currentFrame = 0;
+      var frames = [];
+
+      var images = [];
+      for (var i = 0; i < 300; i++) {
+        var id = i;
+        if(String(id).length<4){
+          var diff = 4 - String(id).length;
+
+          for (var d = diff - 1; d >= 0; d--) {
+            id = '0' + id;
+          };
+        }
+
+        var file = "kraan_" + id + " copy.jpg";
+        images.push(file);
+      };
+
+      var playFrom = 120;
+      var playTo = 149;
+      var playFrame;
+
+      findFrame(playFrom);
+
+      function findFrame(frame) {
+        if(!frame || frame!==playFrame){
+
+          window.requestAnimationFrame(function(){
+            var img = new Image();
+            img.onload = function(){
+
+              ctx.clearRect( 0, 0, canvas.width, canvas.height );
+              ctx.drawImage(img, 0, 0, 640, 480, 0, 0, canvas.width, canvas.height);
+              //ctx.drawImage(img, 0, 0, 1280, 960, 0, 0, canvas.width, canvas.height);
+            }
+
+            playFrame = frame;
+            console.log('frame update to: ' + playFrame);
+
+            var file = images[playFrame];
+            img.src = 'assets/kraan_min_640/' + file; // Set source path.
+          });
+        }
+      }
+
+      var player;
+      function playLoadFrames() {
+        player = setInterval(function(){
+          if(playFrame<playTo){
+            playFrame++;
+          } else {
+            playFrame = playFrom;
+          }
+        },1000/20)
+
+        var loader = function(){
+          window.requestAnimationFrame(function(){
+            var img = new Image();
+            img.onload = function(){
+
+              ctx.clearRect( 0, 0, canvas.width, canvas.height );
+              ctx.drawImage(img, 0, 0, 1280, 960, 0, 0, canvas.width, canvas.height);
+
+              loader();
+            }
+
+            var file = images[playFrame];
+            img.src = 'assets/kraan_min/' + file; // Set source path.
+          });
+        }
+
+        loader();
+      }
+
+
+      // window or document
+      window.addEventListener("touchmove", function(event) {
+        if (event.target.classList.contains('unscrollable')) {
+          // no more scrolling
+          event.preventDefault();
+        }
+      }, false);
+
+      // No special listeners needed on .scrollable elements
+
+
+      /* ------------------- */
+
+
+      var IS_MOVING = false;
+      var DOWN_POS;
+      var START_FRAME;
+
+      $('.unscrollable').mousedown(function(e) {
+        down({
+          x: e.pageX,
+          y: e.pageY
+        });
+      });
+      $(window).mousemove(function(e) {
+        if(IS_MOVING==true){
+          move({
+            x: e.pageX,
+            y: e.pageY
+          });
+        }
+      });
+
+      $(window).mouseup(function() { up(); });
+
+      // Setup touch event handlers.
+      $('.unscrollable').bind('touchstart', function(e) {
+        e.preventDefault();
+        down({
+          x: e.originalEvent.touches[0].pageX,
+          y: e.originalEvent.touches[0].pageY
+        });
+      });
+      $('.unscrollable').bind('touchmove', function(e) {
+        e.preventDefault();
+        move({
+          x: e.originalEvent.touches[0].pageX,
+          y: e.originalEvent.touches[0].pageY
+        });
+      });
+      $(window).bind('touchend', function(e) {
+        e.preventDefault();
+        up(e);
+      });
+
+      function down(param) {
+        $('#touchFeedback').html('down');
+        DOWN_POS = param;
+        START_FRAME = playFrame;
+        IS_MOVING = true;
+      }
+
+      function move(param) {
+        var difference = Math.round((param.x - DOWN_POS.x)/20);
+
+        var newFame = START_FRAME + difference;
+
+
+        findFrame(newFame);
+
+        $('#touchFeedback').html('diff: ' + difference);
+      }
+
+      function up(param) {
+        $('#touchFeedback').html('up');
+        IS_MOVING = false;
+      }
+
+
+    </script>
+  </body>
+</html>

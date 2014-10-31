@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>threesixty demo</title>
+    <link rel="stylesheet" href="./assets/normalize.css" />
+    <link rel="stylesheet" href="./assets/main.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        outline: 0;
+        position: relative;
+
+        text-align: center;
+      }
+
+      .threesixty {
+        margin: 0px auto;
+      }
+
+      #testImages,
+      #testCanvas {
+        margin: 0px auto;
+        width: 640px;
+        height: 480px;
+
+        margin-bottom: 100px;
+      }
+
+      #testCanvas {
+        background: black;
+      }
+
+      #testImages{
+        background: red;
+        position: relative;
+        overflow: hidden;
+        display: none;
+      }
+
+      #testImages img {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Threesixty demo</h1>
+    <p>Copyright 2014 Digiti</p>
+    <a href="#" id="startLoad">Start Load</a>
+    <br/><br/><br/>
+
+    <canvas id="testCanvas" width="1280" height="960" class="unscrollable"></canvas>
+
+    <div id="testImages"></div>
+
+    <script src="./../dist/threesixty.js"></script>
+    <script src="./../bower_components/jquery/dist/jquery.js"></script>
+
+    <script>
+      $('#startLoad').on('click',function(event) {
+        event.preventDefault();
+
+        //preloadFrames();
+        //preloadImages();
+        playLoadFrames();
+
+        //$('#testCanvas').hide();
+
+        $(this).remove();
+      });
+
+
+      var canvas      = document.getElementById("testCanvas");
+      var ctx         = canvas.getContext("2d");
+
+      var currentLoaded = 0;
+      var currentFrame = 0;
+      var frames = [];
+
+      var images = [];
+      for (var i = 0; i < 300; i++) {
+        var id = i;
+        if(String(id).length<4){
+          var diff = 4 - String(id).length;
+
+          for (var d = diff - 1; d >= 0; d--) {
+            id = '0' + id;
+          };
+        }
+
+        var file = "bad_" + id + ".jpg";
+        images.push(file);
+      };
+
+      /*
+      var vm = new Threesixty({
+        source: images,
+        root: 'assets/crane_360/',
+        perRow: 30
+      });
+      */
+
+
+      var loadedLength = 0;
+      function preloadFrames(){
+
+        var img = new Image();
+        img.onload = function(){
+
+          var tempCanvas = document.createElement('canvas');
+          tempCanvas.width = 1280;
+          tempCanvas.height = 960;
+
+          var tempContext = tempCanvas.getContext("2d");
+          tempContext.drawImage(img,0,0);
+          frames.push(tempCanvas);
+
+          if(frames.length<images.length){
+            //console.log('currentLoaded: ' + (currentLoaded+1));
+            currentLoaded ++;
+            preloadFrames();
+
+            $(canvas).css('opacity', frames.length/images.length);
+          } else {
+            $(canvas).css('opacity',1);
+            loadFramesComplete();
+          }
+        }
+
+        var file = images[currentLoaded];
+        img.src = 'assets/bad_360_voorbeeld/' + file; // Set source path.
+      }
+
+      function loadFramesComplete(){
+        console.log('Preload Complete: ' + frames.length + 'frames.');
+        animator();
+      }
+
+      function preloadImages(){
+
+        var img = new Image();
+        img.onload = function(){
+
+          var tempCanvas = document.createElement('canvas');
+          tempCanvas.width = 1280;
+          tempCanvas.height = 960;
+
+          var tempContext = tempCanvas.getContext("2d");
+          tempContext.drawImage(img,0,0);
+          frames.push(tempCanvas);
+
+          if(frames.length<images.length){
+            //console.log('currentLoaded: ' + (currentLoaded+1));
+            currentLoaded ++;
+            preloadImages();
+
+            $('#testImages img').hide();
+            $('#testImages').prepend(img);
+            $(canvas).css('opacity', frames.length/images.length);
+          } else {
+            $('#testImages').prepend(img);
+            $(canvas).css('opacity',1);
+
+            //loadComplete();
+          }
+        }
+
+        var file = images[currentLoaded];
+        img.src = 'assets/bad_360_voorbeeld/' + file; // Set source path.
+
+      }
+
+      var playRate = 120;
+      var player;
+      function playLoadFrames() {
+        player = setInterval(function(){
+          if(playRate<149){
+            playRate++;
+          } else {
+            playRate = 120;
+          }
+
+          //console.log('playRate: ' + playRate);
+        },1000/20)
+
+        var loader = function(){
+          window.requestAnimationFrame(function(){
+            var img = new Image();
+            img.onload = function(){
+
+              ctx.clearRect( 0, 0, canvas.width, canvas.height );
+              ctx.drawImage(img, 0, 0, 1280, 960, 0, 0, canvas.width, canvas.height);
+
+              loader();
+            }
+
+            var file = images[playRate];
+            img.src = 'assets/bad_360_voorbeeld/' + file; // Set source path.
+          });
+        }
+
+        loader();
+      }
+
+      function animator() {
+        renderFrame(function(){
+          setTimeout(animator,30);
+        });
+      }
+
+      function renderFrame(callback) {
+        window.requestAnimationFrame(function() {
+          var frame = frames[currentFrame];
+
+          ctx.clearRect( 0, 0, canvas.width, canvas.height );
+          ctx.drawImage(frame, 0, 0, 1280, 960, 0, 0, canvas.width, canvas.height);
+
+          if(currentFrame<(frames.length-1)){
+            currentFrame++;
+          } else {
+            currentFrame = 0;
+          }
+
+          if(currentFrame%30==1){
+            console.log('x 30FPS');
+          }
+
+          callback();
+        });
+      }
+
+
+
+      // window or document
+      window.addEventListener("touchmove", function(event) {
+        if (event.target.classList.contains('unscrollable')) {
+          // no more scrolling
+          event.preventDefault();
+        }
+      }, false);
+
+      // No special listeners needed on .scrollable elements
+
+    </script>
+  </body>
+</html>
