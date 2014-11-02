@@ -63,6 +63,8 @@ Threesixty.prototype.load = function(options){
   var rowsCount = this.renderMeta.rows;
   var perRow = Math.floor(sources.length / rowsCount);
 
+  this.renderMeta.perRow = perRow;
+
   for (var i = 0; i < this.renderMeta.rows; i++) {
     this.frames.push([]);
     for (var j = perRow - 1; j >= 0; j--) {
@@ -171,7 +173,7 @@ Threesixty.prototype.loadRow = function(options){
           that._context.drawImage(this, 0, 0, normal.width, normal.height, 0, 0, that._canvas.width, that._canvas.height);
 
           if(currentLoad <= endIndex) {
-            that._context.globalAlpha = 0.5;
+            that._context.globalAlpha = 0.8;
 
             that._context.beginPath();
             that._context.rect(0,0,that._canvas.width,that._canvas.height);
