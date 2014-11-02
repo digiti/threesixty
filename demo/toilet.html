@@ -30,7 +30,7 @@
     <script>
 
       var sourceFiles = [];
-      for (var i = 2549; i < 2580; i++) {
+      for (var i = 0; i < 270; i++) {
         var id = i;
         if(String(id).length<4){
           var diff = 4 - String(id).length;
@@ -40,7 +40,7 @@
           };
         }
 
-        var file = "assets/Digiti360/IMG_" + id + ".JPG";
+        var file = "assets/toilet_360/toilet_" + id + ".jpg";
         sourceFiles.push(file);
       };
 
@@ -50,17 +50,14 @@
       });
 
       vm.load({
-        rows: 1,
-        startRow: 0,
+        rows: 9,
         startOnStatus: 1,
         normal: {
           sources: sourceFiles,
-          width: 640,
-          height: 480
+          width: 1280,
+          height: 960
         }
       });
-
-      //vm.loadRow({row:7, render:true});
     </script>
   </body>
 </html>
