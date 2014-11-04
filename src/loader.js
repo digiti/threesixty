@@ -40,7 +40,12 @@ Threesixty.prototype.load = function(options){
 
   //fill blank mandatory default properties
   for (var d in _defaults) {
-    options[d] = options[d] || _defaults[d];
+
+    if(options.hasOwnProperty(d)){
+       options[d] = options[d];
+    } else {
+       options[d] =  _defaults[d];
+    }
   }
 
   //validate type of properties
