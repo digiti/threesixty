@@ -86,6 +86,18 @@ Threesixty.prototype.renderer = function(){
       up(e);
     });
 
+    that.$el.bind('gesturestart', function(e) {
+      $('p').html('gesturestart');
+    });
+
+    that.$el.bind('gestureend', function(e) {
+      $('p').html('gestureend');
+    });
+
+    that.$el.bind('gesturechange', function(e) {
+      $('p').html('scale:' + e.scale);
+    });
+
     //on interaction down
     function down(param) {
       meta.interactions.dragPosition = param;
@@ -112,11 +124,16 @@ Threesixty.prototype.renderer = function(){
         }
 
         //fix infinitife rotation gap
-        newRow += that.frames.length*(extraYRotations*-1);
+        if(meta.loopY){
+          newRow += that.frames.length*(extraYRotations*-1);
+        } else {
+          if(extraYRotations<0){
+            newRow = 0;
+          } else if(extraYRotations>0){
+            newRow = that.frames.length-1;
+          }
+        }
       }
-
-      //console.log(param.x - meta.interactions.dragPosition.x);
-
 
       //calculate offset in frames and track infinitife rotation on x
       var diffX = Math.round((param.x - meta.interactions.dragPosition.x)/30);
@@ -131,10 +148,16 @@ Threesixty.prototype.renderer = function(){
       }
 
       //fix infinitife rotation gap
-      newFrame += meta.perRow*(extraXRotations*-1);
+      if(meta.loopX){
+        newFrame += meta.perRow*(extraXRotations*-1);
+      } else {
+        if(extraXRotations<0){
+          newFrame = 0;
+        } else if(extraXRotations>0){
+          newFrame = meta.perRow-1;
+        }
+      }
 
-      //meta.interactions.targetFrame = newFrame;
-      //meta.interactions.targetRow = newRow;
       that.findFrame(newRow, newFrame);
     }
 
