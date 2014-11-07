@@ -1,35 +1,76 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>threesixty demo</title>
+    <title>360 Demo</title>
     <link rel="stylesheet" href="./assets/normalize.css" />
     <link rel="stylesheet" href="./assets/main.css" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icon.png" />
     <style>
+      html {
+        position: relative;
+      }
+      body,html{
+        width: 100%;
+        height: 100%;
+      }
       body {
         margin: 0;
         padding: 0;
         outline: 0;
-        position: relative;
 
         text-align: center;
       }
 
       .threesixty {
-        margin: 0px auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+
+        margin: -240px 0 0 -320px;
+      }
+
+      .demo-menu {
+        position: absolute;
+        bottom: 0px;
+        text-align: center;
+        width: 100%;
+        height: 50px;
+      }
+
+      .demo-menu a {
+        margin: 0 10px;
+        color: black;
       }
     </style>
   </head>
   <body>
-    <h1>Threesixty demo</h1>
-    <p>Copyright 2014 Digiti</p>
+    <div class="demo-menu">
+      <a href="index.html" target="_self">Crane</a>
+      <a href="bad.html" target="_self">Bath</a>
+      <a href="toilet.html" target="_self">Toilet</a>
+    </div>
+    <div class="threesixty"></div>
 
     <script src="./../dist/threesixty.js"></script>
     <script src="./../bower_components/jquery/dist/jquery.js"></script>
     <script src="./../bower_components/jquery-ui/jquery-ui.min.js"></script>
-
+    <script type="text/javascript">
+      //Fix links scope for webapp
+      var a=document.getElementsByTagName("a");
+      for(var i=0;i<a.length;i++)
+      {
+          a[i].onclick=function()
+          {
+              window.location=this.getAttribute("href");
+              return false
+          }
+      }
+    </script>
     <script>
-
       var sourceFiles = [];
+      var HDFiles = [];
+
       for (var i = 0; i < 300; i++) {
         var id = i;
         if(String(id).length<4){
@@ -40,18 +81,21 @@
           };
         }
 
-        var file = "assets/kraan_min_640/kraan_" + id + " copy.jpg";
+        var file = "assets/crane/640/kraan_" + id + " copy.jpg";
+        var HDfile = "assets/crane/1280/kraan_" + id + ".jpg";
         sourceFiles.push(file);
+        HDFiles.push(HDfile);
       };
 
       var vm = new Threesixty({
         width: 640,
-        height: 480
+        height: 480,
+        $el: $('.threesixty')
       });
 
       vm.load({
         rows: 10,
-        startRow: 4,
+        startRow: 8,
         startOnStatus: 1,
         loopX: true,
         loopY: false,
@@ -59,10 +103,14 @@
           sources: sourceFiles,
           width: 640,
           height: 480
+        },
+        HD: {
+          sources: HDFiles,
+          width: 1280,
+          height: 960
         }
       });
 
-      //vm.loadRow({row:7, render:true});
     </script>
   </body>
 </html>
