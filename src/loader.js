@@ -63,8 +63,16 @@ Threesixty.prototype.load = function(options){
   }
 
   this.frames = [];
+  this.HDframes = [];
 
   var sources = this.renderMeta.normal.sources;
+  var hdSources = this.renderMeta.HD.sources;
+
+  var addHD = false;
+  if(hdSources && hdSources.length>0 && sources.length == hdSources.length){
+    addHD = true;
+  }
+
   var rowsCount = this.renderMeta.rows;
   var perRow = Math.floor(sources.length / rowsCount);
 
@@ -72,8 +80,14 @@ Threesixty.prototype.load = function(options){
 
   for (var i = 0; i < this.renderMeta.rows; i++) {
     this.frames.push([]);
+    this.HDframes.push([]);
     for (var j = perRow - 1; j >= 0; j--) {
        this.frames[i].push(null);
+
+       if(addHD===true){
+        var hdFrame = hdSources[((perRow-j-1) + (perRow*i))];
+        this.HDframes[i].push(hdFrame);
+       }
     }
   };
 
