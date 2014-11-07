@@ -10,6 +10,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
+          'src/requestanimationframe.js',
           'src/_intro.js',
           'src/main.js',
           'src/create.js',
