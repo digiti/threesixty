@@ -15,13 +15,20 @@ Threesixty.prototype.load = function(options){
     //animation speed while in play modus
     speed: 1,
     //animation easing while interacting
-    easing: 0.5,
+    //easing: 0.5,
     //turn to false when only preloading.
     renderAfterLoad: true,
     //auto start after ready status 1 (when first row is loaded)
     startOnStatus: 1,
     //startRow (first loaded row)
     startRow: -1,
+    //init swoosh after first row is completed
+    swoosh: true,
+    //Start auto rotating when load is finished.
+    //This automatically disables/overwrites the swoosh property to false.
+    autoRotate: false,
+    //The time the autoRotation needs to completely spin 1 row.
+    rotationTime: 5000,
 
     normal: {
       //urls to the sequence images
@@ -46,6 +53,11 @@ Threesixty.prototype.load = function(options){
     } else {
        options[d] =  _defaults[d];
     }
+  }
+
+  //Overwrite swoosh on autoRotate
+  if(options.autoRotate==true){
+    options.swoosh = false;
   }
 
   //validate type of properties
@@ -112,6 +124,14 @@ Threesixty.prototype.load = function(options){
         if(that.renderMeta.startOnStatus==1) {
           that.renderer();
         }
+
+        //Also Call onRowLoaded for the first loaded row.
+        if(that.hasOwnProperty('onRowLoaded')) {
+          that.onRowLoaded({
+            row: that.renderMeta.startRow
+          });
+        }
+
         loadAllFrames(e);
       } else {
         that.renderer();
@@ -133,6 +153,14 @@ Threesixty.prototype.load = function(options){
           },
           onComplete: function(){
             if(rowLoaded<rowsCount-1){
+              //Call onRowLoaded for this loaded row.
+              if(that.hasOwnProperty('onRowLoaded')) {
+                if(that.renderMeta.startRow!==rowLoaded){
+                  that.onRowLoaded({
+                    row: rowLoaded
+                  });
+                }
+              }
 
               rowLoaded++;
               loadOtherRow();
@@ -142,6 +170,17 @@ Threesixty.prototype.load = function(options){
 
               if(that.renderMeta.startOnStatus==2) {
                 that.renderer();
+              }
+
+              if(that.hasOwnProperty('onRowLoaded')) {
+                that.onRowLoaded({
+                  row: rowLoaded
+                });
+              }
+
+              //Call onComplete for all rows loaded.
+              if(that.hasOwnProperty('onComplete')) {
+                that.onComplete();
               }
             }
           }

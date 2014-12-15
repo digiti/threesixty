@@ -156,13 +156,20 @@ Threesixty.prototype.load = function(options){
     //animation speed while in play modus
     speed: 1,
     //animation easing while interacting
-    easing: 0.5,
+    //easing: 0.5,
     //turn to false when only preloading.
     renderAfterLoad: true,
     //auto start after ready status 1 (when first row is loaded)
     startOnStatus: 1,
     //startRow (first loaded row)
     startRow: -1,
+    //init swoosh after first row is completed
+    swoosh: true,
+    //Start auto rotating when load is finished.
+    //This automatically disables/overwrites the swoosh property to false.
+    autoRotate: false,
+    //The time the autoRotation needs to completely spin 1 row.
+    rotationTime: 5000,
 
     normal: {
       //urls to the sequence images
@@ -187,6 +194,11 @@ Threesixty.prototype.load = function(options){
     } else {
        options[d] =  _defaults[d];
     }
+  }
+
+  //Overwrite swoosh on autoRotate
+  if(options.autoRotate==true){
+    options.swoosh = false;
   }
 
   //validate type of properties
@@ -253,6 +265,14 @@ Threesixty.prototype.load = function(options){
         if(that.renderMeta.startOnStatus==1) {
           that.renderer();
         }
+
+        //Also Call onRowLoaded for the first loaded row.
+        if(that.hasOwnProperty('onRowLoaded')) {
+          that.onRowLoaded({
+            row: that.renderMeta.startRow
+          });
+        }
+
         loadAllFrames(e);
       } else {
         that.renderer();
@@ -274,6 +294,14 @@ Threesixty.prototype.load = function(options){
           },
           onComplete: function(){
             if(rowLoaded<rowsCount-1){
+              //Call onRowLoaded for this loaded row.
+              if(that.hasOwnProperty('onRowLoaded')) {
+                if(that.renderMeta.startRow!==rowLoaded){
+                  that.onRowLoaded({
+                    row: rowLoaded
+                  });
+                }
+              }
 
               rowLoaded++;
               loadOtherRow();
@@ -283,6 +311,17 @@ Threesixty.prototype.load = function(options){
 
               if(that.renderMeta.startOnStatus==2) {
                 that.renderer();
+              }
+
+              if(that.hasOwnProperty('onRowLoaded')) {
+                that.onRowLoaded({
+                  row: rowLoaded
+                });
+              }
+
+              //Call onComplete for all rows loaded.
+              if(that.hasOwnProperty('onComplete')) {
+                that.onComplete();
               }
             }
           }
@@ -400,8 +439,9 @@ Threesixty.prototype.renderer = function(){
   var normal = meta.normal;
   var HD = meta.HD;
 
+  meta.currentRow = meta.startRow;
   meta.currentFrame = 0;
-  meta.currentRow = 0;
+
   meta.currentZoom = 1;
   meta.interactions = {
     isDragging: false,
@@ -410,11 +450,19 @@ Threesixty.prototype.renderer = function(){
     dragPosition: null,
     targetFrame: null,
     targetRow: null,
-    startZoom: 1
+    startZoom: 1,
+    initHD: false
+  }
+
+  meta.rotation = {
+    frame: 0,
+    isPlaying: false
   }
 
   this.findFrame = function(options) {
     if(options.row!==meta.currentRow || options.frame!==meta.currentFrame){
+      //console.log('rendering Row:' + options.row + ' & frame:' + options.frame);
+
       meta.currentRow = options.row;
       meta.currentFrame = options.frame;
 
@@ -444,6 +492,10 @@ Threesixty.prototype.renderer = function(){
       }
 
       that.lastHDimg.src = imgSrc;
+
+      if(meta.interactions.initHD==false){
+        meta.interactions.initHD = true;
+      }
     }
   }
 
@@ -516,6 +568,15 @@ Threesixty.prototype.renderer = function(){
     });
 
     function applyZoom(zoom){
+      if(meta.interactions.initHD==false){
+        that.drawHDFrame();
+      }
+
+      if(meta.rotation.hasOwnProperty('isPlaying') && 
+        meta.rotation.isPlaying==true){
+        that.stopRotating();
+      }
+
       meta.currentZoom = zoom;
 
       var maxZoom = HD.width/normal.width;
@@ -531,6 +592,11 @@ Threesixty.prototype.renderer = function(){
 
     //on interaction down
     function down(param) {
+      if(meta.rotation.hasOwnProperty('isPlaying') && 
+        meta.rotation.isPlaying==true){
+        that.stopRotating();
+      }
+
       meta.interactions.dragPosition = param;
       meta.interactions.startFrame = meta.currentFrame;
       meta.interactions.startRow = meta.currentRow;
@@ -598,13 +664,6 @@ Threesixty.prototype.renderer = function(){
         }
 
         that.findFrame({row: newRow, frame: newFrame});
-      /*
-      } else {
-        var diffX = Math.round(param.x - meta.interactions.dragPosition.x);
-        var diffY = Math.round(param.y - meta.interactions.dragPosition.y);
-
-        console.log(diffX + ' | ' + diffY);
-      }*/
     }
 
     //on interaction up
@@ -616,17 +675,52 @@ Threesixty.prototype.renderer = function(){
     }
   }
 
-  // Animate the element's value from 0% to 110%:
-  $({introFrame: 0}).animate({introFrame: meta.perRow}, {
-    duration: 1500,
-    easing:'easeOutCubic', // can be anything
-    step: function() { // called on every step
-      that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(this.introFrame)});
-    },
-    complete: function(){
-      enableInteraction();
+  this.swooshRow = function(){
+    // Animate the element's value from 0% to 110%:
+    $({introFrame: 0}).animate({introFrame: meta.perRow}, {
+      duration: 1500,
+      easing:'easeOutCubic', // can be anything
+      step: function() { // called on every step
+        that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(this.introFrame)});
+      },
+      complete: function(){
+        enableInteraction();
+      }
+    });
+  }
+
+  this.rotateRow = function(){
+    meta.rotation.frame = 0;
+    $(meta.rotation).stop().animate({frame: meta.perRow}, {
+      duration: meta.rotationTime,
+      easing:'linear',
+      step: function() { // called on every step
+        meta.rotation.isPlaying = true;
+        that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(meta.rotation.frame)});
+      },
+      complete: function(){
+        that.rotateRow();
+      }
+    });
+  }
+
+  this.stopRotating = function(){
+    $(meta.rotation).stop();
+    that.drawHDFrame();
+    meta.rotation.isPlaying = false;
+  }
+
+  //First Code to Run
+  if(meta.hasOwnProperty('swoosh') && meta.swoosh==true){
+    this.swooshRow();
+  } else {
+    if(meta.hasOwnProperty('autoRotate') && meta.autoRotate==true){
+       this.rotateRow();
     }
-  });
+
+    that.findFrame({row: that.renderMeta.startRow, frame: 0});
+    enableInteraction();
+  }
 }
 
 
