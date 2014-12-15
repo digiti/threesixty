@@ -23,11 +23,7 @@
       }
 
       .threesixty {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-
-        margin: -240px 0 0 -320px;
+        margin: 50px auto 0 auto;
       }
 
       .demo-menu {
@@ -94,11 +90,18 @@
       });
 
       vm.load({
+        //Specs
         rows: 10,
-        startRow: 8,
+        startRow: 4,
         startOnStatus: 1,
+        //Loops
         loopX: true,
         loopY: false,
+        //Animation
+        swoosh: false,
+        autoRotate: true,
+        rotationTime: 3500,
+        //Feeds
         normal: {
           sources: sourceFiles,
           width: 640,
@@ -110,6 +113,14 @@
           height: 960
         }
       });
+
+      vm.onRowLoaded = function(data){
+        //console.log('onRowLoaded: ' + data.row);
+      }
+
+      vm.onComplete = function(data){
+        //console.log('onComplete');
+      }
 
     </script>
   </body>

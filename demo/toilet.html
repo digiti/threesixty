@@ -21,11 +21,7 @@
       }
 
       .threesixty {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-
-        margin: -240px 0 0 -320px;
+        margin: 50px auto 0 auto;
       }
 
       .demo-menu {
@@ -93,10 +89,17 @@
       });
 
       vm.load({
+        //Specs
         rows: 9,
         startOnStatus: 1,
+        //Loops
         loopX: false,
         loopY: false,
+        //Animation
+        swoosh: false,
+        autoRotate: true,
+        rotationTime: 3500,
+        //Feeds
         normal: {
           sources: sourceFiles,
           width: 640,
