@@ -1,6 +1,6 @@
 # Threesixty
 
-Threesixty Viewer
+360° Photos Viewer
 
 ## Usage
 
@@ -44,6 +44,18 @@ vm.load({
     height: 960
   }
 });
+```
+
+### Add Handles
+
+```javascript
+vm.onRowLoaded = function(data){
+	console.log('onRowLoaded: ' + data.row);
+}
+
+vm.onComplete = function(data){
+	console.log('onComplete');
+}
 ```
 
 ## License
