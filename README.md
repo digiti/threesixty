@@ -87,7 +87,7 @@ this.stopAutoRotate();
 this.enableInteraction();
 ```
 
-### extern zooming
+### Call animated zooming
 ```javascript
 /*
   Animate to a specific zoomlevel, 
