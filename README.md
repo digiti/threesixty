@@ -89,8 +89,8 @@ this.enableInteraction();
 
 ### Call animated zooming
 ```javascript
-  //Animate to a specific zoomlevel, 
-  //providing a zoomfactor and duration
+//Animate to a specific zoomlevel, 
+//providing a zoomfactor and duration
 
 vm.animatedZoom({
   factor: 0.5,
