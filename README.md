@@ -74,17 +74,17 @@ vm.onFirstRowLoaded = function(data){
 
 ### Other functionality commands
 ```javascript
-  //Show a soft eased-out animation on frames.
-  this.swoosh();
+//Show a soft eased-out animation on frames.
+this.swoosh();
 
-  //In case you want to start Auto Rotation:
-  this.autoRotate();
+//In case you want to start Auto Rotation:
+this.autoRotate();
 
-  //In case you want to stop Auto Rotation:
-  this.stopAutoRotate();  
+//In case you want to stop Auto Rotation:
+this.stopAutoRotate();  
 
-  //In case you want no animation:
-  this.enableInteraction();
+//In case you want no animation:
+this.enableInteraction();
 ```
 
 ## License
