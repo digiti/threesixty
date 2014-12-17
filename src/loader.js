@@ -144,7 +144,7 @@ Threesixty.prototype.show = function(){
         loadAllFrames(e);
       } else {
         that.renderer();
-        
+
         if(that.renderMeta.startRow==(rowsCount-1)){
           //Call onFirstRowLoaded for the first and only loaded row.
           if(that.hasOwnProperty('onFirstRowLoaded')) {
@@ -255,7 +255,6 @@ Threesixty.prototype.loadRow = function(options){
         currentLoad++;
 
         if(options.render==true){
-
           that._context.globalAlpha = 1;
           that._context.clearRect( 0, 0, that.width, that.height );
           that._context.drawImage(this, 0, 0, normal.width, normal.height, 0, 0, that._canvas.width, that._canvas.height);
