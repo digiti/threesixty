@@ -4,7 +4,7 @@
 
 ## Usage
 
-### Create Threesixty Component
+### Create Threesixty component
 
 ```javascript
 var vm = new Threesixty({
@@ -14,7 +14,7 @@ var vm = new Threesixty({
 });
 ```
 
-### Load Specifications
+### Load specifications
 
 ```javascript
 vm.load({
@@ -46,7 +46,7 @@ vm.load({
 });
 ```
 
-### Add Handles
+### Add handles
 
 ```javascript
 vm.onFirstRowLoaded = function(data){
@@ -62,20 +62,30 @@ vm.onComplete = function(){
 }
 ```
 
-### Chain Functionality to handles
+### Chain functionality to handles
 ```javascript
 vm.onFirstRowLoaded = function(data){
-  //In case you want a Swoosh Animation:
+  //In case you want the Swoosh Animation after the first, you call it in the handle.
+  //Check out the other functionality commands below.
+  
+  this.swoosh();
+}
+```
+
+### Other functionality commands
+```javascript
+  //Show a soft eased-out animation on frames.
   this.swoosh();
 
   //In case you want to start Auto Rotation:
   this.autoRotate();
 
-  //In case you want no animation:
-  this.enableInteraction();  
-}
-```
+  //In case you want to stop Auto Rotation:
+  this.stopAutoRotate();  
 
+  //In case you want no animation:
+  this.enableInteraction();
+```
 
 ## License
 
