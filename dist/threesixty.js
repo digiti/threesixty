@@ -153,12 +153,8 @@ Threesixty.prototype.load = function(options){
     loopX: true,
     //loop vertically
     loopY: false,
-    //animation speed while in play modus
-    speed: 1,
-    //animation easing while interacting
-    //easing: 0.5,
-    //turn to false when only preloading.
-    renderAfterLoad: true,
+    //turn to false to wait for it ...
+    loadAfterinit: true,
     //auto start after ready status 1 (when first row is loaded)
     startOnStatus: 1,
     //startRow (first loaded row)
@@ -211,9 +207,13 @@ Threesixty.prototype.load = function(options){
     }
   }
 
-  if(this.renderMeta.renderAfterLoad){
-    this.layout();
+  if(this.renderMeta.loadAfterinit){
+    this.show();
   }
+}
+
+Threesixty.prototype.show = function(){
+  this.layout();
 
   this.frames = [];
   this.HDframes = [];
@@ -264,6 +264,13 @@ Threesixty.prototype.load = function(options){
       if(rowsCount>1){
         if(that.renderMeta.startOnStatus==1) {
           that.renderer();
+        }
+
+        //Call onFirstRowLoaded for the first loaded row.
+        if(that.hasOwnProperty('onFirstRowLoaded')) {
+          that.onFirstRowLoaded({
+            row: that.renderMeta.startRow
+          });
         }
 
         //Also Call onRowLoaded for the first loaded row.
@@ -444,6 +451,7 @@ Threesixty.prototype.renderer = function(){
 
   meta.currentZoom = 1;
   meta.interactions = {
+    enabled: false,
     isDragging: false,
     startFrame: null,
     startRow: null,
@@ -455,8 +463,8 @@ Threesixty.prototype.renderer = function(){
   }
 
   meta.rotation = {
-    frame: 0,
-    isPlaying: false
+    isPlaying: false,
+    frame: 0
   }
 
   this.findFrame = function(options) {
@@ -499,73 +507,124 @@ Threesixty.prototype.renderer = function(){
     }
   }
 
-  var enableInteraction = function(){
-    //mouse down
-    that.$el.mousedown(function(e) {
-      down({x: e.pageX, y: e.pageY});
-    });
+  this.swoosh = function(callback){
+    meta.rotation = {frame: 0,isPlaying: false}
 
-    //mouse move
-    $(window).mousemove(function(e) {
-      if(meta.interactions.isDragging==true){
-        move({x: e.pageX, y: e.pageY});
+    $(meta.rotation).animate({frame: meta.perRow}, {
+      duration: 1300,
+      easing:'easeOutCubic', // can be anything
+      step: function() { // called on every step
+        that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(this.frame)});
+      }, complete: function(){
+        that.enableInteraction();
       }
     });
+  }
 
-    //mouse up
-    $(window).mouseup(up);
+  this.autoRotate = function(callback){
+    if(meta.rotation.isPlaying==false){
+      meta.rotation.isPlaying = true;
+      meta.rotation.frame = 0;
 
-    //touch start
-    that.$el.bind('touchstart', function(e) {
-      e.preventDefault();
-      down({
-        x: e.originalEvent.touches[0].pageX,
-        y: e.originalEvent.touches[0].pageY
+      $(meta.rotation).stop().animate({frame: meta.perRow}, {
+        duration: meta.rotationTime,
+        easing:'linear',
+        step: function() { // called on every step
+          meta.rotation.isPlaying = true;
+          that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(meta.rotation.frame)});
+        },
+        complete: function(){
+          meta.rotation.isPlaying = false;
+          that.autoRotate();
+        }
       });
-    });
 
-    //touch move
-    that.$el.bind('touchmove', function(e) {
-      e.preventDefault();
+      that.enableInteraction();
 
-      var touches = e.originalEvent.touches;
-      if(meta.interactions.isDragging==true && touches.length<=1){
-        move({
-          x: touches[0].pageX,
-          y: touches[0].pageY
+      if(callback)
+        callback(); 
+    }
+  }
+
+  this.stopAutoRotate = function(callback){
+    $(meta.rotation).stop();
+    meta.rotation.isPlaying = false;
+
+    if(callback)
+      callback(); 
+  }
+
+  this.enableInteraction = function(){
+    if(meta.interactions.enabled==false){
+      meta.interactions.enabled = true;
+
+      //mouse down
+      that.$el.mousedown(function(e) {
+        down({x: e.pageX, y: e.pageY});
+      });
+
+      //mouse move
+      $(window).mousemove(function(e) {
+        if(meta.interactions.isDragging==true){
+          move({x: e.pageX, y: e.pageY});
+        }
+      });
+
+      //mouse up
+      $(window).mouseup(up);
+
+      //touch start
+      that.$el.bind('touchstart', function(e) {
+        e.preventDefault();
+        down({
+          x: e.originalEvent.touches[0].pageX,
+          y: e.originalEvent.touches[0].pageY
         });
-      }
-    });
+      });
 
-    //touch end
-    $(window).bind('touchend', function(e) {
-      e.preventDefault();
-      up(e);
-    });
+      //touch move
+      that.$el.bind('touchmove', function(e) {
+        e.preventDefault();
 
-    that.$el.bind('gesturestart', function(e) {
-      e.preventDefault();
-      meta.interactions.startZoom = meta.currentZoom;
-    });
+        var touches = e.originalEvent.touches;
+        if(meta.interactions.isDragging==true && touches.length<=1){
+          move({
+            x: touches[0].pageX,
+            y: touches[0].pageY
+          });
+        }
+      });
 
-    that.$el.bind('gesturechange', function(e) {
-      e.preventDefault();
-      var zoom = meta.interactions.startZoom +  ((-1+e.originalEvent.scale)*meta.interactions.startZoom);
+      //touch end
+      $(window).bind('touchend', function(e) {
+        e.preventDefault();
+        up(e);
+      });
 
-      if(zoom){
-        applyZoom(zoom);
-      }
-    });
+      that.$el.bind('gesturestart', function(e) {
+        e.preventDefault();
+        meta.interactions.startZoom = meta.currentZoom;
+      });
 
-    that.$el.on('mousewheel', function(e) {
-      e.preventDefault();
-      var scrollSpeed = e.originalEvent.deltaY;
-      var direction = Math.abs(scrollSpeed)/scrollSpeed;
+      that.$el.bind('gesturechange', function(e) {
+        e.preventDefault();
+        var zoom = meta.interactions.startZoom +  ((-1+e.originalEvent.scale)*meta.interactions.startZoom);
 
-      if(direction){
-        applyZoom(meta.currentZoom + (direction/50));
-      }
-    });
+        if(zoom){
+          applyZoom(zoom);
+        }
+      });
+
+      that.$el.on('mousewheel', function(e) {
+        e.preventDefault();
+        var scrollSpeed = e.originalEvent.deltaY;
+        var direction = Math.abs(scrollSpeed)/scrollSpeed;
+
+        if(direction){
+          applyZoom(meta.currentZoom + (direction/50));
+        }
+      });
+    }
 
     function applyZoom(zoom){
       if(meta.interactions.initHD==false){
@@ -574,7 +633,7 @@ Threesixty.prototype.renderer = function(){
 
       if(meta.rotation.hasOwnProperty('isPlaying') && 
         meta.rotation.isPlaying==true){
-        that.stopRotating();
+        that.stopAutoRotate();
       }
 
       meta.currentZoom = zoom;
@@ -594,7 +653,7 @@ Threesixty.prototype.renderer = function(){
     function down(param) {
       if(meta.rotation.hasOwnProperty('isPlaying') && 
         meta.rotation.isPlaying==true){
-        that.stopRotating();
+        that.stopAutoRotate();
       }
 
       meta.interactions.dragPosition = param;
@@ -675,47 +734,12 @@ Threesixty.prototype.renderer = function(){
     }
   }
 
-  this.swooshRow = function(){
-    // Animate the element's value from 0% to 110%:
-    $({introFrame: 0}).animate({introFrame: meta.perRow}, {
-      duration: 1500,
-      easing:'easeOutCubic', // can be anything
-      step: function() { // called on every step
-        that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(this.introFrame)});
-      },
-      complete: function(){
-        enableInteraction();
-      }
-    });
-  }
-
-  this.rotateRow = function(){
-    meta.rotation.frame = 0;
-    $(meta.rotation).stop().animate({frame: meta.perRow}, {
-      duration: meta.rotationTime,
-      easing:'linear',
-      step: function() { // called on every step
-        meta.rotation.isPlaying = true;
-        that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(meta.rotation.frame)});
-      },
-      complete: function(){
-        that.rotateRow();
-      }
-    });
-  }
-
-  this.stopRotating = function(){
-    $(meta.rotation).stop();
-    that.drawHDFrame();
-    meta.rotation.isPlaying = false;
-  }
-
   //First Code to Run
   if(meta.hasOwnProperty('swoosh') && meta.swoosh==true){
-    this.swooshRow();
+    //this.swoosh(enableInteraction);
   } else {
     if(meta.hasOwnProperty('autoRotate') && meta.autoRotate==true){
-       this.rotateRow();
+       //this.autoRotate();
     }
 
     that.findFrame({row: that.renderMeta.startRow, frame: 0});

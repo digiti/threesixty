@@ -49,6 +49,10 @@ vm.load({
 ### Add Handles
 
 ```javascript
+vm.onFirstRowLoaded = function(data){
+  console.log('onFirstRowLoaded: ' + data.row);
+}
+
 vm.onRowLoaded = function(data){
 	console.log('onRowLoaded: ' + data.row);
 }
@@ -57,6 +61,10 @@ vm.onComplete = function(data){
 	console.log('onComplete');
 }
 ```
+
+### Chain Functionality to handles
+
+
 
 ## License
 
