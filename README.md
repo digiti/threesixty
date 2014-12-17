@@ -67,12 +67,12 @@ vm.onComplete = function(){
 vm.onFirstRowLoaded = function(data){
   //Chaining 'Swoosh' to 'onFirstRowLoaded'
   //Check out the other functionality commands below.
-  
+
   this.swoosh();
 }
 ```
 
-### Other functionality commands
+### Other chainable functionality commands
 ```javascript
 //Show a soft eased-out animation on frames.
 this.swoosh();
@@ -85,6 +85,19 @@ this.stopAutoRotate();
 
 //In case you want no animation:
 this.enableInteraction();
+```
+
+### extern zooming
+```javascript
+/*
+  Animate to a specific zoomlevel, 
+  providing a zoomfactor and duration
+*/
+
+vm.animatedZoom({
+  factor: 0.5,
+  duration: 1000
+})
 ```
 
 ## License
