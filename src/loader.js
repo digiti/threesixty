@@ -12,12 +12,8 @@ Threesixty.prototype.load = function(options){
     loopX: true,
     //loop vertically
     loopY: false,
-    //animation speed while in play modus
-    speed: 1,
-    //animation easing while interacting
-    //easing: 0.5,
-    //turn to false when only preloading.
-    renderAfterLoad: true,
+    //turn to false to wait for it ...
+    loadAfterinit: true,
     //auto start after ready status 1 (when first row is loaded)
     startOnStatus: 1,
     //startRow (first loaded row)
@@ -70,9 +66,13 @@ Threesixty.prototype.load = function(options){
     }
   }
 
-  if(this.renderMeta.renderAfterLoad){
-    this.layout();
+  if(this.renderMeta.loadAfterinit){
+    this.show();
   }
+}
+
+Threesixty.prototype.show = function(){
+  this.layout();
 
   this.frames = [];
   this.HDframes = [];
@@ -123,6 +123,13 @@ Threesixty.prototype.load = function(options){
       if(rowsCount>1){
         if(that.renderMeta.startOnStatus==1) {
           that.renderer();
+        }
+
+        //Call onFirstRowLoaded for the first loaded row.
+        if(that.hasOwnProperty('onFirstRowLoaded')) {
+          that.onFirstRowLoaded({
+            row: that.renderMeta.startRow
+          });
         }
 
         //Also Call onRowLoaded for the first loaded row.
