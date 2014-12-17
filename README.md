@@ -65,7 +65,7 @@ vm.onComplete = function(){
 ### Chain functionality to handles
 ```javascript
 vm.onFirstRowLoaded = function(data){
-  //In case you want the Swoosh Animation after the first, you call it in the handle.
+  //Chaining 'Swoosh' to 'onFirstRowLoaded'
   //Check out the other functionality commands below.
   
   this.swoosh();
