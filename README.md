@@ -57,13 +57,24 @@ vm.onRowLoaded = function(data){
 	console.log('onRowLoaded: ' + data.row);
 }
 
-vm.onComplete = function(data){
+vm.onComplete = function(){
 	console.log('onComplete');
 }
 ```
 
 ### Chain Functionality to handles
+```javascript
+vm.onFirstRowLoaded = function(data){
+  //In case you want a Swoosh Animation:
+  this.swoosh();
 
+  //In case you want to start Auto Rotation:
+  this.autoRotate();
+
+  //In case you want no animation:
+  this.enableInteraction();  
+}
+```
 
 
 ## License
