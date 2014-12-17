@@ -448,8 +448,8 @@ Threesixty.prototype.renderer = function(){
 
   meta.currentRow = meta.startRow;
   meta.currentFrame = 0;
+  meta.currentZoom = 0;
 
-  meta.currentZoom = 1;
   meta.interactions = {
     enabled: false,
     isDragging: false,
@@ -458,7 +458,8 @@ Threesixty.prototype.renderer = function(){
     dragPosition: null,
     targetFrame: null,
     targetRow: null,
-    startZoom: 1,
+    startZoom: 0,
+    zoom: 1,
     initHD: false
   }
 
@@ -554,6 +555,59 @@ Threesixty.prototype.renderer = function(){
       callback(); 
   }
 
+  this.animatedZoom = function(params){
+    var maxZoom = HD.width/normal.width;
+
+    if(params.factor>1){
+      params.factor = 1;
+    } else if(params.factor<=0){
+      params.factor = 0;
+    }
+
+    var zoom = params.factor;
+
+    if(!params.duration){
+      params.duration = 600;
+    }
+
+    if(params.factor!==meta.currentZoom){
+      $({factor: meta.currentZoom}).animate({factor: zoom}, {
+        duration: params.duration,
+        easing:'easeOutCubic',
+        step: function() {
+          that.applyZoom(this.factor);
+        }, complete: function(){
+          if(params.callback)
+            params.callback();
+        }
+      });
+    }
+  }
+
+  this.applyZoom = function(zoom){
+    var maxZoom = HD.width/normal.width;
+    var zoom = zoom;
+
+    if(meta.interactions.initHD==false){
+      that.drawHDFrame();
+    }
+
+    if(meta.rotation.hasOwnProperty('isPlaying') && 
+      meta.rotation.isPlaying==true){
+      that.stopAutoRotate();
+    }
+
+    if(zoom<0){
+      zoom = 0;
+    } else if(zoom>1){
+      zoom = 1;
+    }
+
+    meta.currentZoom = zoom;
+
+    that._$canvas.css('transform', 'matrix('+ (1+((maxZoom-1)*zoom)) +', 0, 0, '+ (1+((maxZoom-1)*zoom)) +', 0, 0)');
+  }
+
   this.enableInteraction = function(){
     if(meta.interactions.enabled==false){
       meta.interactions.enabled = true;
@@ -608,10 +662,17 @@ Threesixty.prototype.renderer = function(){
 
       that.$el.bind('gesturechange', function(e) {
         e.preventDefault();
-        var zoom = meta.interactions.startZoom +  ((-1+e.originalEvent.scale)*meta.interactions.startZoom);
+        var scale = e.originalEvent.scale;
+        var zoom = 0;
 
-        if(zoom){
-          applyZoom(zoom);
+        if(scale>1){
+          zoom = meta.interactions.startZoom + (((scale-1)/5)*2);
+        } else if(scale<1){
+          zoom = meta.interactions.startZoom - ((1-(scale))*1.7);
+        }
+
+        if(zoom>=0 && zoom<=1){
+          that.applyZoom(zoom);
         }
       });
 
@@ -621,11 +682,12 @@ Threesixty.prototype.renderer = function(){
         var direction = Math.abs(scrollSpeed)/scrollSpeed;
 
         if(direction){
-          applyZoom(meta.currentZoom + (direction/50));
+          that.applyZoom(meta.currentZoom + (direction/50));
         }
       });
     }
 
+    /*
     function applyZoom(zoom){
       if(meta.interactions.initHD==false){
         that.drawHDFrame();
@@ -648,6 +710,7 @@ Threesixty.prototype.renderer = function(){
 
       that._$canvas.css('transform', 'matrix('+meta.currentZoom+', 0, 0, '+meta.currentZoom+', 0, 0)');
     }
+    */
 
     //on interaction down
     function down(param) {
