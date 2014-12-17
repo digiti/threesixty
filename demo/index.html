@@ -94,13 +94,15 @@
         rows: 10,
         startRow: 4,
         startOnStatus: 1,
+        loadAfterinit: true,
+
         //Loops
         loopX: true,
         loopY: false,
+
         //Animation
-        swoosh: false,
-        autoRotate: true,
-        rotationTime: 3500,
+        rotationTime: 3000,
+
         //Feeds
         normal: {
           sources: sourceFiles,
@@ -114,12 +116,24 @@
         }
       });
 
+      vm.onFirstRowLoaded = function(data){
+        console.log('onFirstRowLoaded: ' + data.row);
+        /* Or: Show the swoosh animation */
+        this.swoosh();
+        
+        /* Or: Start the rotation animation loop */
+        //this.autoRotate();
+        
+        /* Or: Show no animation, just enable interaction */
+        //this.enableInteraction();
+      }
+
       vm.onRowLoaded = function(data){
-        //console.log('onRowLoaded: ' + data.row);
+        console.log('onRowLoaded: ' + data.row);
       }
 
       vm.onComplete = function(data){
-        //console.log('onComplete');
+        console.log('onComplete');
       }
 
     </script>
