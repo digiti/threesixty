@@ -91,6 +91,7 @@
       vm.load({
         //Specs
         rows: 9,
+        startRow: 5,
         startOnStatus: 1,
 
         //Loops
@@ -112,6 +113,26 @@
           height: 960
         }
       });
+
+      vm.onFirstRowLoaded = function(data){
+        console.log('onFirstRowLoaded');
+        /* Or: Show the swoosh animation */
+        this.autoRotate();
+        
+        /* Or: Start the rotation animation loop */
+        //this.autoRotate();
+        
+        /* Or: Show no animation, just enable interaction */
+        //this.enableInteraction();
+      }
+
+      vm.onRowLoaded = function(data){
+        console.log('onRowLoaded: ' + data.row);
+      }
+
+      vm.onComplete = function(){
+        console.log('onComplete');
+      }
     </script>
   </body>
 </html>

@@ -355,15 +355,7 @@ Threesixty.prototype.renderer = function(){
     }
   }
 
+  
   //First Code to Run
-  if(meta.hasOwnProperty('swoosh') && meta.swoosh==true){
-    //this.swoosh(enableInteraction);
-  } else {
-    if(meta.hasOwnProperty('autoRotate') && meta.autoRotate==true){
-       //this.autoRotate();
-    }
-
-    that.findFrame({row: that.renderMeta.startRow, frame: 0});
-    enableInteraction();
-  }
+  that.findFrame({row: that.renderMeta.startRow, frame: 0});
 }

@@ -82,7 +82,19 @@
         }
       });
 
-      //vm.loadRow({row:7, render:true});
+      vm.onFirstRowLoaded = function(data){
+        console.log('onFirstRowLoaded');
+        /* Or: Show the swoosh animation */
+        this.autoRotate();
+      }
+
+      vm.onRowLoaded = function(data){
+        console.log('onRowLoaded: ' + data.row);
+      }
+
+      vm.onComplete = function(){
+        console.log('onComplete');
+      }
     </script>
   </body>
 </html>

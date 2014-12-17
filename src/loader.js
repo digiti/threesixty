@@ -105,6 +105,8 @@ Threesixty.prototype.show = function(){
 
   if(this.renderMeta.startRow==-1){
     this.renderMeta.startRow = Math.floor(rowsCount/2);
+  } else if(this.renderMeta.startRow>=rowsCount){
+    this.renderMeta.startRow = rowsCount-1;
   }
 
   var that = this;
@@ -142,6 +144,27 @@ Threesixty.prototype.show = function(){
         loadAllFrames(e);
       } else {
         that.renderer();
+        
+        if(that.renderMeta.startRow==(rowsCount-1)){
+          //Call onFirstRowLoaded for the first and only loaded row.
+          if(that.hasOwnProperty('onFirstRowLoaded')) {
+            that.onFirstRowLoaded({
+              row: that.renderMeta.startRow
+            });
+          }
+
+          //Also Call onRowLoaded for the first and only loaded row.
+          if(that.hasOwnProperty('onRowLoaded')) {
+            that.onRowLoaded({
+              row: that.renderMeta.startRow
+            });
+          }
+
+          //Call onComplete for single row loaded.
+          if(that.hasOwnProperty('onComplete')) {
+            that.onComplete();
+          }
+        }
       }
     }
   });
