@@ -176,9 +176,9 @@ Threesixty.prototype.load = function(options){
 
     HD: {
       //urls to the sequence images.
-      sources: [],
-      width: 1280,
-      height: 960
+      sources: [] //,
+      //width: 1280,
+      //height: 960
     }
   };
 
@@ -518,6 +518,14 @@ Threesixty.prototype.renderer = function(){
     if(imgSrc!==undefined && imgSrc!==null){
       that.lastHDimg = document.createElement("img");
       that.lastHDimg.onload = function() {
+        if(HD.width==undefined || HD.width==0){
+          HD.width = this.width;
+        }
+
+        if(HD.height==undefined || HD.height==0){
+          HD.height = this.height;
+        }
+
         that._context.clearRect( 0, 0, that._canvas.width, that._canvas.height);
         that._context.drawImage(that.lastHDimg, 0, 0, HD.width, HD.height, 0, 0, that._canvas.width, that._canvas.height);
       }

@@ -35,9 +35,9 @@ Threesixty.prototype.load = function(options){
 
     HD: {
       //urls to the sequence images.
-      sources: [],
-      width: 1280,
-      height: 960
+      sources: [] //,
+      //width: 1280,
+      //height: 960
     }
   };
 
