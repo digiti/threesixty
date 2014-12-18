@@ -25,19 +25,16 @@ var Threesixty = function(options) {
   }
 
   this.create();
-  this.layout();
+  //this.layout();
 };
 
 Threesixty.prototype._defaults = {
   $el: null,
   width: 640,
   height: 480,
+  bgColor: '#000000',
 
   ready: 0,
   renderMeta: {
-    normal: {
-      width: 640,
-      height: 480
-    }
   }
 };

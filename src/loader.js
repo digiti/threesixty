@@ -25,8 +25,6 @@ Threesixty.prototype.load = function(options){
     autoRotate: false,
     //The time the autoRotation needs to completely spin 1 row.
     rotationTime: 5000,
-    //The canvas background color to be rendered,
-    bgColor: '#FFFFFF',
 
     normal: {
       //urls to the sequence images
@@ -58,6 +56,14 @@ Threesixty.prototype.load = function(options){
     options.swoosh = false;
   }
 
+  if(!options.normal.width){
+    options.normal.width = _defaults.normal.width;
+  }
+
+  if(!options.normal.height){
+    options.normal.height = _defaults.normal.height;
+  }
+
   //validate type of properties
   var p = this;
   for (var key in _defaults) {
@@ -68,7 +74,11 @@ Threesixty.prototype.load = function(options){
     }
   }
 
+  //console.log('this.renderMeta.HD:');
+  //console.log(this.renderMeta.HD);
+
   if(this.renderMeta.loadAfterinit){
+    this.layout();
     this.show();
   }
 }
@@ -266,7 +276,7 @@ Threesixty.prototype.loadRow = function(options){
 
             that._context.beginPath();
             that._context.rect(0,0,that._canvas.width,that._canvas.height);
-            that._context.fillStyle = that.renderMeta.bgColor;
+            that._context.fillStyle = that.bgColor;
             that._context.fill();
           }
         }
