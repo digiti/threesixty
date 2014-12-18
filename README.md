@@ -17,20 +17,15 @@ var vm = new Threesixty({
 ### Load specifications
 
 ```javascript
+//Load example
+
 vm.load({
   //Specs
   rows: 10,
-  startRow: 4,
-  startOnStatus: 1,
 
   //Loops
   loopX: true,
   loopY: false,
-
-  //Animation
-  swoosh: false,
-  autoRotate: true,
-  rotationTime: 3500,
 
   //Feeds
   normal: {
@@ -44,6 +39,50 @@ vm.load({
     height: 960
   }
 });
+```
+
+### Specifications
+
+```javascript
+{
+  //The amount of rows the lib should calculate with.
+  rows: 10,
+
+  //The index of wich row is loaded and rendered first.
+  startRow: 4,
+
+  //Which status has the defenition of done.
+  //Status 1 for 'after first row is loaded' &
+  //Status 2 for 'after all rows are loaded.'
+  startOnStatus: 1,
+
+  //Whether or not the lib should compile immediately after
+  //initialization. If set to false, call .show() to start loading.
+  loadAfterinit: true,
+
+  //Loops on x-axis.
+  loopX: true,
+
+  //Loops on y-axis.
+  loopY: false,
+
+  //Duration of 1 full rotation animation when using autoRotate.
+  rotationTime: 3500,
+
+  //Feed of normal images.
+  normal: {
+    sources: sourceFiles,
+    width: 640, 
+    height: 480
+  },
+
+  //Feed of HD images.
+  HD: {
+    sources: HDFiles,
+    width: 1280,
+    height: 960
+  }
+}
 ```
 
 ### Add handles
