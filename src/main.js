@@ -38,10 +38,6 @@ Threesixty.prototype._defaults = {
     normal: {
       width: 640,
       height: 480
-    },
-    HD: {
-      width: 1280,
-      height: 960
     }
   }
 };

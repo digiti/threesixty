@@ -6,11 +6,21 @@ Threesixty.prototype.layout = function(){
   this._$canvas.width(this.width);
   this._$canvas.height(this.height);
 
-  this._$canvas.attr('width', this.renderMeta.HD.width);
-  this._$canvas.attr('height', this.renderMeta.HD.height);
+  if(this.renderMeta.hasOwnProperty('HD')){
+    if(this.renderMeta.HD.hasOwnProperty('width')){
+      this._$canvas.attr('width', this.renderMeta.HD.width);
+    }
+
+    if(this.renderMeta.HD.hasOwnProperty('height')){
+      this._$canvas.attr('height', this.renderMeta.HD.height);
+    }
+  } else {
+    this._$canvas.attr('width', this.width);
+    this._$canvas.attr('height', this.height);
+  }
 
   //set container background
-  this.$el.css('background', '#000000');
+  this.$el.css('background', this.bgColor);
 
   //set container position
   this.$el.css('position', 'relative');
