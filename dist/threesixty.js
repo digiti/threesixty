@@ -75,10 +75,6 @@ Threesixty.prototype._defaults = {
     normal: {
       width: 640,
       height: 480
-    },
-    HD: {
-      width: 1280,
-      height: 960
     }
   }
 };
@@ -125,11 +121,21 @@ Threesixty.prototype.layout = function(){
   this._$canvas.width(this.width);
   this._$canvas.height(this.height);
 
-  this._$canvas.attr('width', this.renderMeta.HD.width);
-  this._$canvas.attr('height', this.renderMeta.HD.height);
+  if(this.renderMeta.hasOwnProperty('HD')){
+    if(this.renderMeta.HD.hasOwnProperty('width')){
+      this._$canvas.attr('width', this.renderMeta.HD.width);
+    }
+
+    if(this.renderMeta.HD.hasOwnProperty('height')){
+      this._$canvas.attr('height', this.renderMeta.HD.height);
+    }
+  } else {
+    this._$canvas.attr('width', this.width);
+    this._$canvas.attr('height', this.height);
+  }
 
   //set container background
-  this.$el.css('background', '#000000');
+  this.$el.css('background', this.bgColor);
 
   //set container position
   this.$el.css('position', 'relative');
@@ -166,6 +172,8 @@ Threesixty.prototype.load = function(options){
     autoRotate: false,
     //The time the autoRotation needs to completely spin 1 row.
     rotationTime: 5000,
+    //The canvas background color to be rendered,
+    bgColor: '#FFFFFF',
 
     normal: {
       //urls to the sequence images
@@ -213,7 +221,7 @@ Threesixty.prototype.load = function(options){
 }
 
 Threesixty.prototype.show = function(){
-  this.layout();
+  //this.layout();
 
   this.frames = [];
   this.HDframes = [];
@@ -405,7 +413,7 @@ Threesixty.prototype.loadRow = function(options){
 
             that._context.beginPath();
             that._context.rect(0,0,that._canvas.width,that._canvas.height);
-            that._context.fillStyle = '#000000';
+            that._context.fillStyle = that.renderMeta.bgColor;
             that._context.fill();
           }
         }

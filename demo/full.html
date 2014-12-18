@@ -20,10 +20,11 @@
         outline: 0;
 
         text-align: center;
+        background: black;
       }
 
       .threesixty {
-        margin: 50px auto 0 auto;
+        margin: 0 auto;
       }
 
       .demo-menu {
@@ -41,11 +42,6 @@
     </style>
   </head>
   <body>
-    <div class="demo-menu">
-      <a href="index.html" target="_self">Crane</a>
-      <a href="bad.html" target="_self">Bath</a>
-      <a href="toilet.html" target="_self">Toilet</a>
-    </div>
     <div class="threesixty"></div>
 
     <script src="./../dist/threesixty.js"></script>
@@ -83,11 +79,20 @@
         HDFiles.push(HDfile);
       };
 
+      var targetHeight = window.innerHeight - 2;
+      var compWidth = (targetHeight/480)*640;
+      var compHeight = (targetHeight/480)*480; 
+
+      //init
       var vm = new Threesixty({
-        width: 640,
-        height: 480,
+        width: compWidth,
+        height: compHeight,
         $el: $('.threesixty')
       });
+
+      //positioning
+      var hOffset = (window.innerHeight - compHeight)/2;
+      vm.$el.css('marginTop', hOffset);
 
       vm.load({
         //Specs
@@ -108,6 +113,11 @@
           sources: sourceFiles,
           width: 640,
           height: 480
+        },
+        HD: {
+          sources: HDFiles,
+          width: 1280,
+          height: 960
         }
       });
 
