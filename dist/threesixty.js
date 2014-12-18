@@ -62,20 +62,17 @@ var Threesixty = function(options) {
   }
 
   this.create();
-  this.layout();
+  //this.layout();
 };
 
 Threesixty.prototype._defaults = {
   $el: null,
   width: 640,
   height: 480,
+  bgColor: '#000000',
 
   ready: 0,
   renderMeta: {
-    normal: {
-      width: 640,
-      height: 480
-    }
   }
 };
 
@@ -121,14 +118,15 @@ Threesixty.prototype.layout = function(){
   this._$canvas.width(this.width);
   this._$canvas.height(this.height);
 
-  if(this.renderMeta.hasOwnProperty('HD')){
-    if(this.renderMeta.HD.hasOwnProperty('width')){
-      this._$canvas.attr('width', this.renderMeta.HD.width);
-    }
+  if(this.renderMeta.hasOwnProperty('HD') &&
+    this.renderMeta.HD.hasOwnProperty('width') &&
+    this.renderMeta.HD.hasOwnProperty('height')){
 
-    if(this.renderMeta.HD.hasOwnProperty('height')){
+      this._$canvas.attr('width', this.renderMeta.HD.width);
       this._$canvas.attr('height', this.renderMeta.HD.height);
-    }
+      
+      console.log('canvas width set to: ' + this.renderMeta.HD.width);
+      console.log('canvas height set to: ' + this.renderMeta.HD.height);
   } else {
     this._$canvas.attr('width', this.width);
     this._$canvas.attr('height', this.height);
@@ -172,8 +170,6 @@ Threesixty.prototype.load = function(options){
     autoRotate: false,
     //The time the autoRotation needs to completely spin 1 row.
     rotationTime: 5000,
-    //The canvas background color to be rendered,
-    bgColor: '#FFFFFF',
 
     normal: {
       //urls to the sequence images
@@ -205,6 +201,14 @@ Threesixty.prototype.load = function(options){
     options.swoosh = false;
   }
 
+  if(!options.normal.width){
+    options.normal.width = _defaults.normal.width;
+  }
+
+  if(!options.normal.height){
+    options.normal.height = _defaults.normal.height;
+  }
+
   //validate type of properties
   var p = this;
   for (var key in _defaults) {
@@ -215,7 +219,11 @@ Threesixty.prototype.load = function(options){
     }
   }
 
+  //console.log('this.renderMeta.HD:');
+  //console.log(this.renderMeta.HD);
+
   if(this.renderMeta.loadAfterinit){
+    this.layout();
     this.show();
   }
 }
@@ -413,7 +421,7 @@ Threesixty.prototype.loadRow = function(options){
 
             that._context.beginPath();
             that._context.rect(0,0,that._canvas.width,that._canvas.height);
-            that._context.fillStyle = that.renderMeta.bgColor;
+            that._context.fillStyle = that.bgColor;
             that._context.fill();
           }
         }

@@ -7,8 +7,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="icon.png" />
     <style>
-      html {
+       html {
         position: relative;
+        overflow: hidden;
       }
       body,html{
         width: 100%;
@@ -86,7 +87,8 @@
       var vm = new Threesixty({
         width: 640,
         height: 480,
-        $el: $('.threesixty')
+        $el: $('.threesixty'),
+        bgColor: '#FFFFFF'
       });
 
       vm.load({
@@ -108,6 +110,11 @@
           sources: sourceFiles,
           width: 640,
           height: 480
+        },
+        HD: {
+          sources: HDFiles,
+          width: 1280,
+          height: 960
         }
       });
 

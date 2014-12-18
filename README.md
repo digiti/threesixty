@@ -8,9 +8,15 @@
 
 ```javascript
 var vm = new Threesixty({
+  //Dimensions
   width: 640,
   height: 480,
-  $el: $('.threesixty')
+
+  //Predefined container
+  $el: $('.threesixty'),
+
+  //Background color
+  bgColor: '#000000'
 });
 ```
 
