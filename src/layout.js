@@ -12,9 +12,6 @@ Threesixty.prototype.layout = function(){
 
       this._$canvas.attr('width', this.renderMeta.HD.width);
       this._$canvas.attr('height', this.renderMeta.HD.height);
-      
-      console.log('canvas width set to: ' + this.renderMeta.HD.width);
-      console.log('canvas height set to: ' + this.renderMeta.HD.height);
   } else {
     this._$canvas.attr('width', this.width);
     this._$canvas.attr('height', this.height);
