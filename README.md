@@ -72,6 +72,12 @@ vm.load({
   //Loops on y-axis.
   loopY: false,
 
+  //Invert dragging on X-axis.
+  invertX: true,
+
+  //Invert dragging on Y-axis.
+  invertY: true,
+
   //Duration of 1 full rotation animation when using autoRotate.
   rotationTime: 3500,
 
@@ -123,7 +129,8 @@ vm.onFirstRowLoaded = function(data){
 this.swoosh();
 
 //In case you want to start Auto Rotation:
-this.autoRotate();
+//param direction: 1 for normal, -1 for inverted.
+this.autoRotate(1);
 
 //In case you want to stop Auto Rotation:
 this.stopAutoRotate();  
