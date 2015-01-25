@@ -88,28 +88,40 @@ Threesixty.prototype.renderer = function(){
     });
   }
 
-  this.autoRotate = function(callback){
+  this.autoRotate = function(direction){
+    var direction = (direction) ? direction : 1;
+    var target;
+
     if(meta.rotation.isPlaying==false){
       meta.rotation.isPlaying = true;
-      meta.rotation.frame = 0;
 
-      $(meta.rotation).stop().animate({frame: meta.perRow}, {
+      if(direction==1){
+        meta.rotation.frame = 0;
+        target = meta.perRow;
+      } else if(direction==-1){
+        meta.rotation.frame = meta.perRow-1;
+        target = 0;
+      }
+
+      
+
+      $(meta.rotation).stop().animate({frame: target}, {
         duration: meta.rotationTime,
         easing:'linear',
         step: function() { // called on every step
           meta.rotation.isPlaying = true;
+
+          console.log('frame: ' + Math.floor(meta.rotation.frame));
+
           that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(meta.rotation.frame)});
         },
         complete: function(){
           meta.rotation.isPlaying = false;
-          that.autoRotate();
+          that.autoRotate(direction);
         }
       });
 
-      that.enableInteraction();
-
-      if(callback)
-        callback(); 
+      that.enableInteraction(); 
     }
   }
 
@@ -306,6 +318,8 @@ Threesixty.prototype.renderer = function(){
         if(that.ready==2 && that.frames.length>1){
           //calculate offset in rows and track infinitife rotation on y
           var diffY = Math.round((param.y - meta.interactions.dragPosition.y)/60)*-1;
+          if(meta.invertY==true){diffY*=-1;}
+
           newRow = meta.interactions.startRow + diffY;
           var extraYRotations = newRow/that.frames.length;
 
@@ -330,6 +344,8 @@ Threesixty.prototype.renderer = function(){
 
         //calculate offset in frames and track infinitife rotation on x
         var diffX = Math.round((param.x - meta.interactions.dragPosition.x)/20);
+        if(meta.invertX==true){diffX*=-1;}
+
         var newFrame = meta.interactions.startFrame + diffX;
         var extraXRotations = newFrame/meta.perRow;
 

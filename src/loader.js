@@ -25,6 +25,10 @@ Threesixty.prototype.load = function(options){
     autoRotate: false,
     //The time the autoRotation needs to completely spin 1 row.
     rotationTime: 5000,
+    //Invert Dragging behavior on X.
+    invertX: false,
+    //Invert Dragging behavior on Y.
+    invertY: false,
 
     normal: {
       //urls to the sequence images

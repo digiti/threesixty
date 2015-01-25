@@ -5,18 +5,11 @@
     <link rel="stylesheet" href="./assets/normalize.css" />
     <link rel="stylesheet" href="./assets/main.css" />
     <style>
-      html {
-        position: relative;
-      }
-      body,html{
-        width: 100%;
-        height: 100%;
-      }
-      
       body {
         margin: 0;
         padding: 0;
         outline: 0;
+        position: relative;
 
         text-align: center;
       }
@@ -40,91 +33,75 @@
     </style>
   </head>
   <body>
-    <div class="demo-menu">
-      <a href="index.html" target="_self">Crane</a>
-      <a href="bad.html" target="_self">Bath</a>
-      <a href="toilet.html" target="_self">Toilet</a>
-    </div>
-    <div class="threesixty"></div>
+    <h1>Threesixty demo</h1>
+    <p>Copyright 2014 Digiti</p>
 
     <script src="./../dist/threesixty.js"></script>
     <script src="./../bower_components/jquery/dist/jquery.js"></script>
     <script src="./../bower_components/jquery-ui/jquery-ui.min.js"></script>
-    <script type="text/javascript">
-      //Fix links scope for webapp
-      var a=document.getElementsByTagName("a");
-      for(var i=0;i<a.length;i++)
-      {
-          a[i].onclick=function()
-          {
-              window.location=this.getAttribute("href");
-              return false
-          }
-      }
-    </script>
+
     <script>
 
       var sourceFiles = [];
       var HDFiles = [];
 
-      for (var i = 0; i < 270; i++) {
+      for (var i = 0; i < 300; i++) {
         var id = i;
         if(String(id).length<4){
           var diff = 4 - String(id).length;
 
+          /*
           for (var d = diff - 1; d >= 0; d--) {
             id = '0' + id;
           };
+          */
         }
 
-        var file = "assets/toilet/640/toilet_" + id + ".jpg";
-        var HDfile = "assets/toilet/1280/toilet_" + id + ".jpg";
+        //var file = "assets/straat/straat_" + id + ".jpg";
+        var file = 'https://360-publisher.s3.amazonaws.com/uploads/three_sixty/small_images/1/360_image_' + id + '.jpg';
+
+        //var HDfile = "assets/straat/straat_" + id + ".jpg";
+        var HDfile = 'https://360-publisher.s3.amazonaws.com/uploads/three_sixty/uploaded_images/1/360_image_' + id + '.jpg';
+        
         sourceFiles.push(file);
         HDFiles.push(HDfile);
       };
 
       var vm = new Threesixty({
         width: 640,
-        height: 480,
-        $el: $('.threesixty')
+        height: 452,
+        bgColor: '#FFFFFF'
       });
 
       vm.load({
         //Specs
-        rows: 9,
-        startRow: 5,
+        rows: 1,
+        //startRow: 1,
         startOnStatus: 1,
-
         //Loops
-        loopX: false,
+        loopX: true,
         loopY: false,
-
         //Animation
-        rotationTime: 3000,
-
+        swoosh: true,
+        autoRotate: true,
+        rotationTime: 10000,
         //Feeds
         normal: {
           sources: sourceFiles,
           width: 640,
-          height: 480
+          height: 452
         },
         HD: {
           sources: HDFiles,
           width: 1280,
-          height: 960
+          height: 904
         }
       });
 
       vm.onFirstRowLoaded = function(data){
         console.log('onFirstRowLoaded');
         /* Or: Show the swoosh animation */
-        this.swoosh();
-        
-        /* Or: Start the rotation animation loop */
-        //this.autoRotate();
-        
-        /* Or: Show no animation, just enable interaction */
-        //this.enableInteraction();
+        this.autoRotate();
       }
 
       vm.onRowLoaded = function(data){
