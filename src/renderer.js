@@ -111,8 +111,6 @@ Threesixty.prototype.renderer = function(){
         step: function() { // called on every step
           meta.rotation.isPlaying = true;
 
-          console.log('frame: ' + Math.floor(meta.rotation.frame));
-
           that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(meta.rotation.frame)});
         },
         complete: function(){
@@ -164,6 +162,15 @@ Threesixty.prototype.renderer = function(){
 
   this.applyZoom = function(zoom){
     var maxZoom = HD.width/normal.width;
+
+    if(meta.extraZoom!==0){
+      maxZoom += meta.extraZoom;
+      //console.log('maxZoom: ' + maxZoom);
+    }
+
+    console.log('maxZoom: ' + maxZoom);
+
+
     var zoom = zoom;
 
     if(meta.interactions.initHD==false){
@@ -189,6 +196,9 @@ Threesixty.prototype.renderer = function(){
   this.enableInteraction = function(){
     if(meta.interactions.enabled==false){
       meta.interactions.enabled = true;
+
+      //alert('that.drawHDFrame();');
+      that.drawHDFrame();
 
       //mouse down
       that.$el.mousedown(function(e) {
@@ -219,11 +229,15 @@ Threesixty.prototype.renderer = function(){
         e.preventDefault();
 
         var touches = e.originalEvent.touches;
-        if(meta.interactions.isDragging==true && touches.length<=1){
+        if(meta.interactions.isDragging==true && touches.length==1){
+          $('#output').html(touches.length);
+
           move({
             x: touches[0].pageX,
             y: touches[0].pageY
           });
+        } else if(meta.interactions.isDragging==true && touches.length==2){
+
         }
       });
 

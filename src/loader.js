@@ -29,6 +29,8 @@ Threesixty.prototype.load = function(options){
     invertX: false,
     //Invert Dragging behavior on Y.
     invertY: false,
+    //Manipulate the zoomlevel.
+    extraZoom: 0,
 
     normal: {
       //urls to the sequence images

@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="./assets/normalize.css" />
     <link rel="stylesheet" href="./assets/main.css" />
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name = "viewport" content = "initial-scale = 1.0">
     <link rel="apple-touch-icon" href="icon.png" />
     <style>
        html {
@@ -21,10 +22,13 @@
         outline: 0;
 
         text-align: center;
+
+        background: black;
       }
 
       .threesixty {
-        margin: 50px auto 0 auto;
+        /*margin: 50px auto 0 auto;*/
+        margin: 0 auto;
       }
 
       .demo-menu {
@@ -38,6 +42,10 @@
       .demo-menu a {
         margin: 0 10px;
         color: black;
+      }
+
+      #output {
+        display: none;
       }
     </style>
   </head>
@@ -86,10 +94,10 @@
       };
 
       var vm = new Threesixty({
-        width: 640,
-        height: 480,
+        width: 2048,
+        height: 1536,
         $el: $('.threesixty'),
-        bgColor: '#FFFFFF'
+        bgColor: '#000000'
       });
 
       vm.load({
@@ -107,31 +115,45 @@
         rotationTime: 3000,
 
         //Invert X
-        invertX: true,
+        //invertX: true,
 
         //Invert Y
-        invertY: true,
+        //invertY: true,
+
+        extraZoom: 1.6,
 
         //Feeds
         normal: {
-          sources: sourceFiles,
-          width: 640,
-          height: 480
+          sources: HDFiles,
+          width: 1280,
+          height: 960
         },
         HD: {
           sources: HDFiles,
           width: 1280,
           height: 960
         }
+
+
+        // normal: {
+        //   sources: HDFiles,
+        //   width: 1280,
+        //   height: 960
+        // },
+        // HD: {
+        //   sources: HDFiles,
+        //   width: 1280,
+        //   height: 960
+        // }
       });
 
       vm.onFirstRowLoaded = function(data){
         console.log('onFirstRowLoaded');
         /* Or: Show the swoosh animation */
-        this.swoosh();
+        //this.swoosh();
         
         /* Or: Start the rotation animation loop */
-        //this.autoRotate();
+        this.autoRotate();
         
         /* Or: Show no animation, just enable interaction */
         //this.enableInteraction();
