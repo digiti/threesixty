@@ -23,7 +23,7 @@
 
         text-align: center;
 
-        background: black;
+        background: white;
       }
 
       .threesixty {
@@ -45,7 +45,7 @@
       }
 
       #output {
-        display: none;
+        display: block;
       }
     </style>
   </head>
@@ -94,8 +94,8 @@
       };
 
       var vm = new Threesixty({
-        width: 1024,
-        height: 768,
+        width: 640,
+        height: 480,
         $el: $('.threesixty'),
         bgColor: '#000000'
       });
@@ -120,21 +120,9 @@
         //Invert Y
         //invertY: true,
 
-        extraZoom: 1.6,
+        //extraZoom: 1.6,
 
-        //Feeds
-        normal: {
-          sources: HDFiles,
-          width: 1280,
-          height: 960
-        },
-        HD: {
-          sources: HDFiles,
-          width: 1280,
-          height: 960
-        }
-
-
+        // //Feeds
         // normal: {
         //   sources: HDFiles,
         //   width: 1280,
@@ -145,6 +133,18 @@
         //   width: 1280,
         //   height: 960
         // }
+
+
+        normal: {
+          sources: sourceFiles,
+          width: 640,
+          height: 480
+        },
+        HD: {
+          sources: HDFiles,
+          width: 1280,
+          height: 960
+        }
       });
 
       vm.onFirstRowLoaded = function(data){

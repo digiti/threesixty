@@ -17,6 +17,7 @@ Threesixty.prototype.renderer = function(){
     targetFrame: null,
     targetRow: null,
     startZoom: 0,
+    startDistance: 0,
     zoom: 1,
     initHD: false
   }
@@ -218,10 +219,19 @@ Threesixty.prototype.renderer = function(){
       //touch start
       that.$el.bind('touchstart', function(e) {
         e.preventDefault();
+
+        var touches = e.originalEvent.touches;
+
         down({
-          x: e.originalEvent.touches[0].pageX,
-          y: e.originalEvent.touches[0].pageY
+          x: touches[0].pageX,
+          y: touches[0].pageY
         });
+
+        if(touches.length>1){
+          meta.interactions.startDistance = getFingerRangeByTouches(touches);
+          meta.interactions.startZoom = meta.currentZoom
+          $('#output').html('Startzoom: ' + String(meta.interactions.startZoom));
+        }
       });
 
       //touch move
@@ -230,14 +240,25 @@ Threesixty.prototype.renderer = function(){
 
         var touches = e.originalEvent.touches;
         if(meta.interactions.isDragging==true && touches.length==1){
-          $('#output').html(touches.length);
-
           move({
             x: touches[0].pageX,
             y: touches[0].pageY
           });
-        } else if(meta.interactions.isDragging==true && touches.length==2){
 
+        } else if(meta.interactions.isDragging==true && touches.length==2){
+          var diff = getFingerRangeByTouches(touches) - meta.interactions.startDistance;
+          
+          var zoom = 0;
+
+          zoom = meta.interactions.startZoom + (diff/200);
+
+
+
+          $('#output').html('diff: ' + String(diff));
+
+          if(zoom>=0 && zoom<=1){
+            that.applyZoom(zoom);
+          }
         }
       });
 
@@ -248,24 +269,24 @@ Threesixty.prototype.renderer = function(){
       });
 
       that.$el.bind('gesturestart', function(e) {
-        e.preventDefault();
-        meta.interactions.startZoom = meta.currentZoom;
+        // e.preventDefault();
+        // meta.interactions.startZoom = meta.currentZoom;
       });
 
       that.$el.bind('gesturechange', function(e) {
-        e.preventDefault();
-        var scale = e.originalEvent.scale;
-        var zoom = 0;
+        // e.preventDefault();
+        // var scale = e.originalEvent.scale;
+        // var zoom = 0;
 
-        if(scale>1){
-          zoom = meta.interactions.startZoom + (((scale-1)/5)*2);
-        } else if(scale<1){
-          zoom = meta.interactions.startZoom - ((1-(scale))*1.7);
-        }
+        // if(scale>1){
+        //   zoom = meta.interactions.startZoom + (((scale-1)/5)*2);
+        // } else if(scale<1){
+        //   zoom = meta.interactions.startZoom - ((1-(scale))*1.7);
+        // }
 
-        if(zoom>=0 && zoom<=1){
-          that.applyZoom(zoom);
-        }
+        // if(zoom>=0 && zoom<=1){
+        //   that.applyZoom(zoom);
+        // }
       });
 
       that.$el.on('mousewheel', function(e) {
@@ -279,30 +300,31 @@ Threesixty.prototype.renderer = function(){
       });
     }
 
-    /*
-    function applyZoom(zoom){
-      if(meta.interactions.initHD==false){
-        that.drawHDFrame();
-      }
+    function getFingerRangeByTouches(touches){
+      var p1 = {
+        x: touches[0].pageX,
+        y: touches[0].pageY
+      };
 
-      if(meta.rotation.hasOwnProperty('isPlaying') && 
-        meta.rotation.isPlaying==true){
-        that.stopAutoRotate();
-      }
+      var p2 = {
+        x: touches[1].pageX,
+        y: touches[1].pageY
+      };
 
-      meta.currentZoom = zoom;
-
-      var maxZoom = HD.width/normal.width;
-
-      if(zoom<1){
-        meta.currentZoom = 1;
-      } else if(zoom>maxZoom){
-        meta.currentZoom = maxZoom;
-      }
-
-      that._$canvas.css('transform', 'matrix('+meta.currentZoom+', 0, 0, '+meta.currentZoom+', 0, 0)');
+      return distanceBetweenPoints(p1, p2);
     }
-    */
+    
+    function distanceBetweenPoints(point1,point2) {
+      var xs = 0;var ys = 0;
+
+      xs = point2.x - point1.x;
+      xs = xs * xs;
+
+      ys = point2.y - point1.y;
+      ys = ys * ys;
+
+      return Math.round(Math.sqrt( xs + ys ));
+    }
 
     //on interaction down
     function down(param) {

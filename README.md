@@ -78,6 +78,11 @@ vm.load({
   //Invert dragging on Y-axis.
   invertY: true,
 
+  //The Max Zoom Level is calculated based on the difference in size between the images 
+  //of the normal and HD feed. If both are the same feed, the difference is 0. You can 
+  //manipulate the zoom level by adding 'extraZoom'.
+  extraZoom: 0,
+
   //Duration of 1 full rotation animation when using autoRotate.
   rotationTime: 3500,
 
