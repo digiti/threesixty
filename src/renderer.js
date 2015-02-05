@@ -90,29 +90,60 @@ Threesixty.prototype.renderer = function(){
   }
 
   this.autoRotate = function(direction){
+    //console.log('meta.currentFrame: ' + meta.currentFrame);
+
     var direction = (direction) ? direction : 1;
+    var duration = meta.rotationTime;
     var target;
 
     if(meta.rotation.isPlaying==false){
       meta.rotation.isPlaying = true;
 
       if(direction==1){
-        meta.rotation.frame = 0;
+        // meta.rotation.frame = 0;
+
+        if(meta.currentFrame==(meta.perRow-1)){
+          meta.rotation.frame = 0;
+        } else {
+          meta.rotation.frame = meta.currentFrame;
+
+          var diff = meta.perRow - meta.currentFrame;
+          var relative = diff/meta.perRow;
+
+          duration *= relative;
+        }
+
         target = meta.perRow;
       } else if(direction==-1){
-        meta.rotation.frame = meta.perRow-1;
+        // meta.rotation.frame = meta.perRow-1;
+
+        if(meta.currentFrame==0){
+          meta.rotation.frame = meta.perRow-1;
+        } else {
+          meta.rotation.frame = meta.currentFrame;
+
+          var relative = meta.currentFrame/meta.perRow;
+
+          duration *= relative;
+        }
+
         target = 0;
       }
 
       
 
       $(meta.rotation).stop().animate({frame: target}, {
-        duration: meta.rotationTime,
+        duration: duration,
         easing:'linear',
         step: function() { // called on every step
           meta.rotation.isPlaying = true;
 
-          that.findFrame({row: that.renderMeta.startRow, frame: Math.floor(meta.rotation.frame)});
+          var requestedFrame = Math.floor(meta.rotation.frame);
+
+          if(meta.currentFrame!==requestedFrame){
+            console.log('requesting frame: ' + requestedFrame);
+            that.findFrame({row: meta.currentRow, frame:requestedFrame});
+          }
         },
         complete: function(){
           meta.rotation.isPlaying = false;
