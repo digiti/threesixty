@@ -139,9 +139,7 @@ Threesixty.prototype.renderer = function(){
           meta.rotation.isPlaying = true;
 
           var requestedFrame = Math.floor(meta.rotation.frame);
-
           if(meta.currentFrame!==requestedFrame){
-            console.log('requesting frame: ' + requestedFrame);
             that.findFrame({row: meta.currentRow, frame:requestedFrame});
           }
         },
