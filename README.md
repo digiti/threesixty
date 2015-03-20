@@ -51,6 +51,9 @@ vm.load({
 
 ```javascript
 {
+  //Whether or not to show the default loading bar.
+  showDefaultLoading: true,
+
   //The amount of rows the lib should calculate with.
   rows: 10,
 
