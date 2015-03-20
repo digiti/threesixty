@@ -1,6 +1,7 @@
 Threesixty.prototype.load = function(options){
   //overwrite loader
   this.renderMeta = {};
+  this.loadMeta = {};
 
   //catch options if present
   options = options || {};
@@ -31,6 +32,8 @@ Threesixty.prototype.load = function(options){
     invertY: false,
     //Manipulate the zoomlevel.
     extraZoom: 0,
+    //Show the loading bar by default.
+    showDefaultLoading: true,
 
     normal: {
       //urls to the sequence images
@@ -90,10 +93,12 @@ Threesixty.prototype.load = function(options){
 }
 
 Threesixty.prototype.show = function(){
-  //this.layout();
-
   this.frames = [];
   this.HDframes = [];
+
+  console.log('loadMeta');
+  this.loadMeta.total = 0;
+  this.loadMeta.current = 0;
 
   var sources = this.renderMeta.normal.sources;
   var hdSources = this.renderMeta.HD.sources;
@@ -132,10 +137,11 @@ Threesixty.prototype.show = function(){
     row:that.renderMeta.startRow,
     render:true,
     onFrame:function(e){
-      var perc = e.frame / perRow;
-      var loaderwidth = perc*that.width;
-
-      that._$loader.width(loaderwidth);
+      if(that.renderMeta.showDefaultLoading){
+        var perc = e.frame / perRow;
+        var loaderwidth = perc*that.width;
+        that._$loader.width(loaderwidth);
+      }
     },
     onComplete:function(e){
       that._$loader.width(0);
@@ -196,8 +202,20 @@ Threesixty.prototype.show = function(){
           render:false,
           onFrame: function(e){
             var perc =  (e.frame + (perRow*e.row)) / (perRow*rowsCount);
-            var loaderwidth = perc*that.width;
-            that._$loader.width(loaderwidth);
+
+            // //share the loading data
+            // if(that.hasOwnProperty('onLoadUpdate')) {
+            //   that.loadMeta.current = (e.frame + (perRow*e.row))+1;
+            //   that.loadMeta.total = (perRow*rowsCount);
+            //   that.loadMeta.percentage = perc;
+
+            //   that.onLoadUpdate(that.loadMeta);
+            // }
+
+            if(that.renderMeta.showDefaultLoading){
+              var loaderwidth = perc*that.width;
+              that._$loader.width(loaderwidth);
+            }
           },
           onComplete: function(){
             if(rowLoaded<rowsCount-1){
@@ -225,6 +243,12 @@ Threesixty.prototype.show = function(){
                   row: rowLoaded
                 });
               }
+
+              // if(that.hasOwnProperty('onLoadUpdate')) {
+              //   that.loadMeta.current += 1;
+              //   that.loadMeta.percentage = 1;
+              //   that.onLoadUpdate(that.loadMeta);
+              // }
 
               //Call onComplete for all rows loaded.
               if(that.hasOwnProperty('onComplete')) {
@@ -317,6 +341,7 @@ Threesixty.prototype.loadRow = function(options){
     if(that.renderMeta.startRow!==options.row){
       console.warn('Threesixty: loader row ' + options.row + ' is already loaded.');
     }
+
     if(options.hasOwnProperty('onComplete')) {
       options.onComplete({row:options.row,frame:perRow -1});
     }

@@ -101,6 +101,9 @@
       });
 
       vm.load({
+        //Show or hide default loading bar
+        showDefaultLoading: false,
+
         //Specs
         rows: 10,
         startRow: 4,
@@ -151,16 +154,21 @@
         console.log('onFirstRowLoaded');
         /* Or: Show the swoosh animation */
         //this.swoosh();
-        
+
         /* Or: Start the rotation animation loop */
         this.autoRotate(-1);
-        
+
         /* Or: Show no animation, just enable interaction */
         //this.enableInteraction();
       }
 
       vm.onRowLoaded = function(data){
         console.log('onRowLoaded: ' + data.row);
+      }
+
+      vm.onLoadUpdate = function(data){
+        // console.log('onLoadUpdate: ' + data.percentage);
+        $('#output').html('loading: ' + Math.round(data.percentage*100) + '%');
       }
 
       vm.onComplete = function(){

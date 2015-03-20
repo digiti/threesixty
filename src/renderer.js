@@ -29,7 +29,6 @@ Threesixty.prototype.renderer = function(){
 
   this.findFrame = function(options) {
     if(options.row!==meta.currentRow || options.frame!==meta.currentFrame){
-      //console.log('rendering Row:' + options.row + ' & frame:' + options.frame);
 
       meta.currentRow = options.row;
       meta.currentFrame = options.frame;
@@ -90,7 +89,6 @@ Threesixty.prototype.renderer = function(){
   }
 
   this.autoRotate = function(direction){
-    //console.log('meta.currentFrame: ' + meta.currentFrame);
 
     var direction = (direction) ? direction : 1;
     var duration = meta.rotationTime;
@@ -195,11 +193,7 @@ Threesixty.prototype.renderer = function(){
 
     if(meta.extraZoom!==0){
       maxZoom += meta.extraZoom;
-      //console.log('maxZoom: ' + maxZoom);
     }
-
-    console.log('maxZoom: ' + maxZoom);
-
 
     var zoom = zoom;
 
