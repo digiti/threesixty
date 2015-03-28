@@ -238,7 +238,6 @@ Threesixty.prototype.show = function(){
   this.frames = [];
   this.HDframes = [];
 
-  console.log('loadMeta');
   this.loadMeta.total = 0;
   this.loadMeta.current = 0;
 
@@ -261,6 +260,8 @@ Threesixty.prototype.show = function(){
     for (var j = perRow - 1; j >= 0; j--) {
        this.frames[i].push(null);
 
+       this.loadMeta.total++;
+
        if(addHD===true){
         var hdFrame = hdSources[((perRow-j-1) + (perRow*i))];
         this.HDframes[i].push(hdFrame);
@@ -273,6 +274,8 @@ Threesixty.prototype.show = function(){
   } else if(this.renderMeta.startRow>=rowsCount){
     this.renderMeta.startRow = rowsCount-1;
   }
+
+  console.log('loadTotal: ' + this.loadMeta.total);
 
   var that = this;
   this.loadRow({
@@ -345,15 +348,6 @@ Threesixty.prototype.show = function(){
           onFrame: function(e){
             var perc =  (e.frame + (perRow*e.row)) / (perRow*rowsCount);
 
-            // //share the loading data
-            // if(that.hasOwnProperty('onLoadUpdate')) {
-            //   that.loadMeta.current = (e.frame + (perRow*e.row))+1;
-            //   that.loadMeta.total = (perRow*rowsCount);
-            //   that.loadMeta.percentage = perc;
-
-            //   that.onLoadUpdate(that.loadMeta);
-            // }
-
             if(that.renderMeta.showDefaultLoading){
               var loaderwidth = perc*that.width;
               that._$loader.width(loaderwidth);
@@ -386,12 +380,6 @@ Threesixty.prototype.show = function(){
                 });
               }
 
-              // if(that.hasOwnProperty('onLoadUpdate')) {
-              //   that.loadMeta.current += 1;
-              //   that.loadMeta.percentage = 1;
-              //   that.onLoadUpdate(that.loadMeta);
-              // }
-
               //Call onComplete for all rows loaded.
               if(that.hasOwnProperty('onComplete')) {
                 that.onComplete();
@@ -411,7 +399,7 @@ Threesixty.prototype.loadRow = function(options){
   var perRow = Math.floor(sources.length / rowsCount);
 
   var startIndex = options.row * perRow;
-  var endIndex = startIndex + perRow-1;
+  var endIndex = startIndex + perRow;
   var currentLoad = startIndex;
 
   var needsLoading = false;
@@ -453,8 +441,17 @@ Threesixty.prototype.loadRow = function(options){
           }
         }
 
-        if(currentLoad > endIndex) {
+        that.loadMeta.current++;
+
+        if(currentLoad >= endIndex) {
           //loading finished!
+
+          if(that.hasOwnProperty('onFrameLoaded')) {
+            that.onFrameLoaded({
+              frame: that.loadMeta.current,
+              total: that.loadMeta.total
+            });
+          }
 
           if(options.hasOwnProperty('onComplete')) {
             var rowFrame = currentLoad - (perRow*rowID) -1;
@@ -469,12 +466,27 @@ Threesixty.prototype.loadRow = function(options){
             options.onFrame({row:options.row,frame:rowFrame});
           }
 
+          if(that.hasOwnProperty('onFrameLoaded')) {
+            that.onFrameLoaded({
+              frame: that.loadMeta.current,
+              total: that.loadMeta.total
+            });
+          }
+
           preload();
         }
       }
 
       // Set asset-to-load source path.
-      asset.src = sources[currentLoad];
+      if(currentLoad!==undefined){
+        asset.src = sources[currentLoad];
+      } else {
+        if(options.hasOwnProperty('onComplete')) {
+          var rowFrame = currentLoad - (perRow*rowID) -1;
+          options.onComplete({row:options.row,frame:rowFrame});
+        }
+      }
+
     }
 
     //next frame
@@ -483,6 +495,22 @@ Threesixty.prototype.loadRow = function(options){
     if(that.renderMeta.startRow!==options.row){
       console.warn('Threesixty: loader row ' + options.row + ' is already loaded.');
     }
+
+
+
+    // console.log('no need loading');
+    // console.log('perRow: ' + rowsCount);
+    // that.loadMeta.current+=rowsCount;
+
+
+    // if(that.hasOwnProperty('onFrameLoaded')) {
+    //   that.onFrameLoaded({
+    //     frame: that.that.loadMeta.current
+    //     total: that.loadMeta.total
+    //   });
+    // }
+
+
 
     if(options.hasOwnProperty('onComplete')) {
       options.onComplete({row:options.row,frame:perRow -1});

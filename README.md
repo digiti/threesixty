@@ -116,6 +116,10 @@ vm.onRowLoaded = function(data){
 	console.log('onRowLoaded: ' + data.row);
 }
 
+vm.onFrameLoaded = function(data){
+  console.log('onFrameLoaded: ' + data.frame);
+}
+
 vm.onComplete = function(){
 	console.log('onComplete');
 }

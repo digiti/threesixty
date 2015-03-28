@@ -152,6 +152,7 @@
 
       vm.onFirstRowLoaded = function(data){
         console.log('onFirstRowLoaded');
+
         /* Or: Show the swoosh animation */
         //this.swoosh();
 
@@ -163,12 +164,11 @@
       }
 
       vm.onRowLoaded = function(data){
-        console.log('onRowLoaded: ' + data.row);
+        // console.log('onRowLoaded: ' + data.row);
       }
 
-      vm.onLoadUpdate = function(data){
-        // console.log('onLoadUpdate: ' + data.percentage);
-        $('#output').html('loading: ' + Math.round(data.percentage*100) + '%');
+      vm.onFrameLoaded = function(data){
+        console.log('onFrameLoaded: ' + data.frame);
       }
 
       vm.onComplete = function(){
