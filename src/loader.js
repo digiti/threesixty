@@ -396,7 +396,7 @@ Threesixty.prototype.destroy = function(){
   if(this.renderMeta){
     delete this.renderMeta.normal;
     delete this.renderMeta.HD;
-    console.log('unchaining renderMeta');
+    // console.log('unchaining renderMeta');
   }
 
   //cleanup frames
@@ -411,31 +411,31 @@ Threesixty.prototype.destroy = function(){
       _row = null;
     };
 
-    console.log('unchaining frames');
+    // console.log('unchaining frames');
   }
 
   if(this.loadRow){
-    console.log('unchaining loadRow');
+    // console.log('unchaining loadRow');
     delete this.loadRow;
   }
 
   if(this.hasOwnProperty('onFirstRowLoaded')){
-    console.log('unchaining onFirstRowLoaded');
+    // console.log('unchaining onFirstRowLoaded');
     delete this.onFirstRowLoaded;
   }
 
   if(this.hasOwnProperty('onRowLoaded')){
-    console.log('unchaining onRowLoaded');
+    // console.log('unchaining onRowLoaded');
     delete this.onRowLoaded;
   }
 
   if(this.hasOwnProperty('onFrameLoaded')){
-    console.log('unchaining onFrameLoaded');
+    // console.log('unchaining onFrameLoaded');
     delete this.onFrameLoaded;
   }
 
   if(this.hasOwnProperty('onComplete')){
-    console.log('unchaining onComplete');
+    // console.log('unchaining onComplete');
     delete this.onComplete;
   }
 
@@ -443,7 +443,7 @@ Threesixty.prototype.destroy = function(){
   for (var prop in that) {
     if (that.hasOwnProperty(prop)) {
       delete that[prop];
-      console.log('delete property ' + prop);
+      // console.log('delete property ' + prop);
     }
   }
 }
