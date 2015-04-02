@@ -162,6 +162,14 @@ vm.animatedZoom({
 })
 ```
 
+### Destroy
+```javascript
+//To destroy and clean up a Threesixty instance,
+//simply call the destroy handler. 
+
+vm.destroy();
+```
+
 ## License
 
 MIT. See `LICENSE.txt` in this directory.

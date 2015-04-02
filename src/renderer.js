@@ -128,7 +128,7 @@ Threesixty.prototype.renderer = function(){
         target = 0;
       }
 
-      
+
 
       $(meta.rotation).stop().animate({frame: target}, {
         duration: duration,
@@ -147,7 +147,7 @@ Threesixty.prototype.renderer = function(){
         }
       });
 
-      that.enableInteraction(); 
+      that.enableInteraction();
     }
   }
 
@@ -156,7 +156,7 @@ Threesixty.prototype.renderer = function(){
     meta.rotation.isPlaying = false;
 
     if(callback)
-      callback(); 
+      callback();
   }
 
   this.animatedZoom = function(params){
@@ -201,7 +201,7 @@ Threesixty.prototype.renderer = function(){
       that.drawHDFrame();
     }
 
-    if(meta.rotation.hasOwnProperty('isPlaying') && 
+    if(meta.rotation.hasOwnProperty('isPlaying') &&
       meta.rotation.isPlaying==true){
       that.stopAutoRotate();
     }
@@ -270,7 +270,7 @@ Threesixty.prototype.renderer = function(){
 
         } else if(meta.interactions.isDragging==true && touches.length==2){
           var diff = getFingerRangeByTouches(touches) - meta.interactions.startDistance;
-          
+
           var zoom = 0;
 
           zoom = meta.interactions.startZoom + (diff/200);
@@ -336,7 +336,7 @@ Threesixty.prototype.renderer = function(){
 
       return distanceBetweenPoints(p1, p2);
     }
-    
+
     function distanceBetweenPoints(point1,point2) {
       var xs = 0;var ys = 0;
 
@@ -351,7 +351,7 @@ Threesixty.prototype.renderer = function(){
 
     //on interaction down
     function down(param) {
-      if(meta.rotation.hasOwnProperty('isPlaying') && 
+      if(meta.rotation.hasOwnProperty('isPlaying') &&
         meta.rotation.isPlaying==true){
         that.stopAutoRotate();
       }
@@ -438,7 +438,7 @@ Threesixty.prototype.renderer = function(){
     }
   }
 
-  
+
   //First Code to Run
   that.findFrame({row: that.renderMeta.startRow, frame: 0});
 }

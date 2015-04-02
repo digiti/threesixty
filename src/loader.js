@@ -133,7 +133,7 @@ Threesixty.prototype.show = function(){
     this.renderMeta.startRow = rowsCount-1;
   }
 
-  console.log('loadTotal: ' + this.loadMeta.total);
+  // console.log('loadTotal: ' + this.loadMeta.total);
 
   var that = this;
   this.loadRow({
@@ -252,126 +252,198 @@ Threesixty.prototype.show = function(){
 }
 
 Threesixty.prototype.loadRow = function(options){
-  var sources = this.renderMeta.normal.sources;
-  var rowsCount = this.renderMeta.rows;
-  var perRow = Math.floor(sources.length / rowsCount);
+  if(this.frames){
+    var sources = this.renderMeta.normal.sources;
+    var rowsCount = this.renderMeta.rows;
+    var perRow = Math.floor(sources.length / rowsCount);
 
-  var startIndex = options.row * perRow;
-  var endIndex = startIndex + perRow;
-  var currentLoad = startIndex;
+    var startIndex = options.row * perRow;
+    var endIndex = startIndex + perRow;
+    var currentLoad = startIndex;
 
-  var needsLoading = false;
-  for (var i = perRow -1; i >= 0; i--) {
-    var slot = this.frames[options.row][i];
-    if(slot === null){
-      needsLoading = true;
-    }
-  };
+    var needsLoading = false;
+    for (var i = perRow -1; i >= 0; i--) {
+      var slot = this.frames[options.row][i];
+      if(slot === null){
+        needsLoading = true;
+      }
+    };
 
-  var that = this;
-  if(needsLoading==true){
-    var normal = that.renderMeta.normal;
-    var HD = that.renderMeta.HD;
-    var preload = function() {
-      var asset = document.createElement("img");
-      asset.onload = function() {
-        var rowID = options.row;
-        var rowFrame = currentLoad - (perRow*rowID);
+    var that = this;
+    if(needsLoading==true){
+      var normal = that.renderMeta.normal;
+      var HD = that.renderMeta.HD;
+      var preload = function() {
+        var asset = document.createElement("img");
+        asset.onload = function() {
+          if(that.frames){
+            var rowID = options.row;
+            var rowFrame = currentLoad - (perRow*rowID);
 
-        if(that.frames[rowID][rowFrame]==null){
-          that.frames[rowID][rowFrame] = this;
-        }
+            if(that.frames[rowID][rowFrame]==null){
+              that.frames[rowID][rowFrame] = this;
+            }
 
-        currentLoad++;
+            currentLoad++;
 
-        if(options.render==true){
-          that._context.globalAlpha = 1;
-          that._context.clearRect( 0, 0, that.width, that.height );
-          that._context.drawImage(this, 0, 0, normal.width, normal.height, 0, 0, that._canvas.width, that._canvas.height);
+            if(options.render==true){
+              that._context.globalAlpha = 1;
+              that._context.clearRect( 0, 0, that.width, that.height );
+              that._context.drawImage(this, 0, 0, normal.width, normal.height, 0, 0, that._canvas.width, that._canvas.height);
 
-          if(currentLoad <= endIndex) {
-            that._context.globalAlpha = 0.8;
+              if(currentLoad <= endIndex) {
+                that._context.globalAlpha = 0.8;
 
-            that._context.beginPath();
-            that._context.rect(0,0,that._canvas.width,that._canvas.height);
-            that._context.fillStyle = that.bgColor;
-            that._context.fill();
+                that._context.beginPath();
+                that._context.rect(0,0,that._canvas.width,that._canvas.height);
+                that._context.fillStyle = that.bgColor;
+                that._context.fill();
+              }
+            }
+
+            that.loadMeta.current++;
+
+            if(currentLoad >= endIndex) {
+              //loading finished!
+
+              if(that.hasOwnProperty('onFrameLoaded')) {
+                that.onFrameLoaded({
+                  frame: that.loadMeta.current,
+                  total: that.loadMeta.total
+                });
+              }
+
+              if(options.hasOwnProperty('onComplete')) {
+                var rowFrame = currentLoad - (perRow*rowID) -1;
+                options.onComplete({row:options.row,frame:rowFrame});
+              }
+
+              currentLoad = undefined;
+            } else {
+              //loading unfinished.
+              if(options.hasOwnProperty('onFrame')) {
+                var rowFrame = currentLoad - (perRow*rowID) - 1;
+                options.onFrame({row:options.row,frame:rowFrame});
+              }
+
+              if(that.hasOwnProperty('onFrameLoaded')) {
+                that.onFrameLoaded({
+                  frame: that.loadMeta.current,
+                  total: that.loadMeta.total
+                });
+              }
+
+              preload();
+            }
           }
         }
 
-        that.loadMeta.current++;
-
-        if(currentLoad >= endIndex) {
-          //loading finished!
-
-          if(that.hasOwnProperty('onFrameLoaded')) {
-            that.onFrameLoaded({
-              frame: that.loadMeta.current,
-              total: that.loadMeta.total
-            });
-          }
-
+        // Set asset-to-load source path.
+        if(currentLoad!==undefined){
+          asset.src = sources[currentLoad];
+        } else {
           if(options.hasOwnProperty('onComplete')) {
             var rowFrame = currentLoad - (perRow*rowID) -1;
             options.onComplete({row:options.row,frame:rowFrame});
           }
-
-          currentLoad = undefined;
-        } else {
-          //loading unfinished.
-          if(options.hasOwnProperty('onFrame')) {
-            var rowFrame = currentLoad - (perRow*rowID) - 1;
-            options.onFrame({row:options.row,frame:rowFrame});
-          }
-
-          if(that.hasOwnProperty('onFrameLoaded')) {
-            that.onFrameLoaded({
-              frame: that.loadMeta.current,
-              total: that.loadMeta.total
-            });
-          }
-
-          preload();
         }
+
       }
 
-      // Set asset-to-load source path.
-      if(currentLoad!==undefined){
-        asset.src = sources[currentLoad];
-      } else {
-        if(options.hasOwnProperty('onComplete')) {
-          var rowFrame = currentLoad - (perRow*rowID) -1;
-          options.onComplete({row:options.row,frame:rowFrame});
-        }
+      //next frame
+      preload();
+    } else {
+      if(that.renderMeta.startRow!==options.row){
+        console.warn('Threesixty: loader row ' + options.row + ' is already loaded.');
       }
 
+
+
+      // console.log('no need loading');
+      // console.log('perRow: ' + rowsCount);
+      // that.loadMeta.current+=rowsCount;
+
+
+      // if(that.hasOwnProperty('onFrameLoaded')) {
+      //   that.onFrameLoaded({
+      //     frame: that.that.loadMeta.current
+      //     total: that.loadMeta.total
+      //   });
+      // }
+
+
+
+      if(options.hasOwnProperty('onComplete')) {
+        options.onComplete({row:options.row,frame:perRow -1});
+      }
     }
+  }
+}
 
-    //next frame
-    preload();
-  } else {
-    if(that.renderMeta.startRow!==options.row){
-      console.warn('Threesixty: loader row ' + options.row + ' is already loaded.');
-    }
+Threesixty.prototype.destroy = function(){
+  //stop pending animation
+  if(this.hasOwnProperty('stopAutoRotate')){
+    this.stopAutoRotate();
+  }
 
+  //clean listeners
+  if(this.$el){
+    this.$el.off();
+    console.log('unchaining listeners');
+  }
 
+  //destroy url buckets
+  if(this.renderMeta){
+    delete this.renderMeta.normal;
+    delete this.renderMeta.HD;
+    console.log('unchaining renderMeta');
+  }
 
-    // console.log('no need loading');
-    // console.log('perRow: ' + rowsCount);
-    // that.loadMeta.current+=rowsCount;
+  //cleanup frames
+  if(this.frames){
+    for (var i = this.frames.length - 1; i >= 0; i--) {
+      var _row = this.frames[i];
 
+      for (var j = _row.length - 1; j >= 0; j--) {
+        _row[j] = null;
+      };
 
-    // if(that.hasOwnProperty('onFrameLoaded')) {
-    //   that.onFrameLoaded({
-    //     frame: that.that.loadMeta.current
-    //     total: that.loadMeta.total
-    //   });
-    // }
+      _row = null;
+    };
 
+    console.log('unchaining frames');
+  }
 
+  if(this.loadRow){
+    console.log('unchaining loadRow');
+    delete this.loadRow;
+  }
 
-    if(options.hasOwnProperty('onComplete')) {
-      options.onComplete({row:options.row,frame:perRow -1});
+  if(this.hasOwnProperty('onFirstRowLoaded')){
+    console.log('unchaining onFirstRowLoaded');
+    delete this.onFirstRowLoaded;
+  }
+
+  if(this.hasOwnProperty('onRowLoaded')){
+    console.log('unchaining onRowLoaded');
+    delete this.onRowLoaded;
+  }
+
+  if(this.hasOwnProperty('onFrameLoaded')){
+    console.log('unchaining onFrameLoaded');
+    delete this.onFrameLoaded;
+  }
+
+  if(this.hasOwnProperty('onComplete')){
+    console.log('unchaining onComplete');
+    delete this.onComplete;
+  }
+
+  var that = this;
+  for (var prop in that) {
+    if (that.hasOwnProperty(prop)) {
+      delete that[prop];
+      console.log('delete property ' + prop);
     }
   }
 }
