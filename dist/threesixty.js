@@ -531,7 +531,7 @@ Threesixty.prototype.destroy = function(){
   //clean listeners
   if(this.$el){
     this.$el.off();
-    console.log('unchaining listeners');
+    // console.log('unchaining listeners');
   }
 
   //destroy url buckets
