@@ -11,7 +11,9 @@
   "author": "Joeri Wauters",
   "license": "MIT",
   "readmeFilename": "README.md",
-  "dependencies": {},
+  "dependencies": {
+    "grunt-contrib-qunit": "^0.3.0"
+  },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-concat": "~0.3.0",
