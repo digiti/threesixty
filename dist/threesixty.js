@@ -832,7 +832,7 @@ Threesixty.prototype.renderer = function(){
       //alert('that.drawHDFrame();');
       that.drawHDFrame();
 
-      //mouse down
+      // mouse down
       that.$el.mousedown(function(e) {
         down({x: e.pageX, y: e.pageY});
       });
@@ -848,7 +848,7 @@ Threesixty.prototype.renderer = function(){
       $(window).mouseup(up);
 
       //touch start
-      that.$el.bind('touchstart', function(e) {
+      that.$el.on('touchstart', function(e) {
         e.preventDefault();
 
         var touches = e.originalEvent.touches;
@@ -866,7 +866,7 @@ Threesixty.prototype.renderer = function(){
       });
 
       //touch move
-      that.$el.bind('touchmove', function(e) {
+      that.$el.on('touchmove', function(e) {
         e.preventDefault();
 
         var touches = e.originalEvent.touches;
@@ -894,41 +894,21 @@ Threesixty.prototype.renderer = function(){
       });
 
       //touch end
-      $(window).bind('touchend', function(e) {
+      that.$el.on('touchend', function(e) {
         e.preventDefault();
         up(e);
       });
 
-      that.$el.bind('gesturestart', function(e) {
-        // e.preventDefault();
-        // meta.interactions.startZoom = meta.currentZoom;
-      });
 
-      that.$el.bind('gesturechange', function(e) {
-        // e.preventDefault();
-        // var scale = e.originalEvent.scale;
-        // var zoom = 0;
+      // that.$el.on('mousewheel', function(e) {
+      //   e.preventDefault();
+      //   var scrollSpeed = e.originalEvent.deltaY;
+      //   var direction = Math.abs(scrollSpeed)/scrollSpeed;
 
-        // if(scale>1){
-        //   zoom = meta.interactions.startZoom + (((scale-1)/5)*2);
-        // } else if(scale<1){
-        //   zoom = meta.interactions.startZoom - ((1-(scale))*1.7);
-        // }
-
-        // if(zoom>=0 && zoom<=1){
-        //   that.applyZoom(zoom);
-        // }
-      });
-
-      that.$el.on('mousewheel', function(e) {
-        e.preventDefault();
-        var scrollSpeed = e.originalEvent.deltaY;
-        var direction = Math.abs(scrollSpeed)/scrollSpeed;
-
-        if(direction){
-          that.applyZoom(meta.currentZoom + (direction/50));
-        }
-      });
+      //   if(direction){
+      //     that.applyZoom(meta.currentZoom + (direction/50));
+      //   }
+      // });
     }
 
     function getFingerRangeByTouches(touches){
